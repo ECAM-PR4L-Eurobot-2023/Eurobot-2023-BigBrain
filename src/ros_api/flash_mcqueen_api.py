@@ -42,6 +42,7 @@ class FlashMcQueenApi:
         self.urgency_stop_callback = tools.default_callback
         self.distance_reached_callback = tools.default_callback
 
+    def start(self):
         self._define_publishers()
         self._define_subscribers()
 
