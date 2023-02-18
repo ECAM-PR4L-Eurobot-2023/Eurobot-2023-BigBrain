@@ -3,7 +3,9 @@
 """
 Topics related to all the nodes
 """
-import std_msgs.msg as msg
+import std_msgs.msg as std_msgs
+
+import eurobot2023.msg as msg
 
 DEFAULT_QUEUE_SIZE = 10
 
@@ -38,20 +40,20 @@ TOPIC_GET_PID_ANGLE = "{}/angle/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
 #                              Topics
 #######################################################################
 TOPICS = {
-    'set-displacement': {'topic': TOPIC_SET_DISPLACEMENT, 'data-type': msg.String},
-    'set-position': {'topic': TOPIC_SET_POSITION, 'data-type': msg.String},
-    'set-rotation': {'topic': TOPIC_SET_ROTATION, 'data-type': msg.Float32},
-    'set-distance-ticks': {'topic': TOPIC_SET_DISTANCE_TICKS, 'data-type': msg.Int64},
-    'set-distance-mm': {'topic': TOPIC_SET_DISTANCE_MM, 'data-type': msg.Float32},
-    'distance-reached': {'topic': TOPIC_DISTANCE_REACHED, 'data-type': msg.Empty},
-    'urgency-stop': {'topic': TOPIC_URGENCY_STOP, 'data-type': msg.Int16},
-    'get-data-all': {'topic': TOPIC_DATA_ALL, 'data-type': msg.String},
-    'set-pid-left-wheel': {'topic': TOPIC_SET_PID_LEFT_WHEEL, 'data-type': msg.String},
-    'set-pid-right-wheel': {'topic': TOPIC_SET_PID_RIGHT_WHEEL, 'data-type': msg.String},
-    'set-pid-position': {'topic': TOPIC_SET_PID_POSITION, 'data-type': msg.String},
-    'set-pid-angle': {'topic': TOPIC_SET_PID_ANGLE, 'data-type': msg.String},
-    'get-pid-left-wheel': {'topic': TOPIC_GET_PID_LEFT_WHEEL, 'data-type': msg.String},
-    'get-pid-right-wheel': {'topic': TOPIC_GET_PID_RIGHT_WHEEL, 'data-type': msg.String},
-    'get-pid-position': {'topic': TOPIC_GET_PID_POSITION, 'data-type': msg.String},
-    'get-pid-angle': {'topic': TOPIC_GET_PID_ANGLE, 'data-type': msg.String},
+    'set-displacement': {'topic': TOPIC_SET_DISPLACEMENT, 'data-type': msg.Displacement},
+    'set-position': {'topic': TOPIC_SET_POSITION, 'data-type': msg.Position},
+    'set-rotation': {'topic': TOPIC_SET_ROTATION, 'data-type': std_msgs.Float32},
+    'set-distance-ticks': {'topic': TOPIC_SET_DISTANCE_TICKS, 'data-type': std_msgs.Int64},
+    'set-distance-mm': {'topic': TOPIC_SET_DISTANCE_MM, 'data-type': std_msgs.Float32},
+    'distance-reached': {'topic': TOPIC_DISTANCE_REACHED, 'data-type': std_msgs.Empty},
+    'urgency-stop': {'topic': TOPIC_URGENCY_STOP, 'data-type': std_msgs.Int16},
+    'get-data-all': {'topic': TOPIC_DATA_ALL, 'data-type': msg.Displacement},
+    'set-pid-left-wheel': {'topic': TOPIC_SET_PID_LEFT_WHEEL, 'data-type': msg.PidParameters},
+    'set-pid-right-wheel': {'topic': TOPIC_SET_PID_RIGHT_WHEEL, 'data-type': msg.PidParameters},
+    'set-pid-position': {'topic': TOPIC_SET_PID_POSITION, 'data-type': msg.PidParameters},
+    'set-pid-angle': {'topic': TOPIC_SET_PID_ANGLE, 'data-type': msg.PidParameters},
+    'get-pid-left-wheel': {'topic': TOPIC_GET_PID_LEFT_WHEEL, 'data-type': msg.PidParameters},
+    'get-pid-right-wheel': {'topic': TOPIC_GET_PID_RIGHT_WHEEL, 'data-type': msg.PidParameters},
+    'get-pid-position': {'topic': TOPIC_GET_PID_POSITION, 'data-type': msg.PidParameters},
+    'get-pid-angle': {'topic': TOPIC_GET_PID_ANGLE, 'data-type': msg.PidParameters},
 }

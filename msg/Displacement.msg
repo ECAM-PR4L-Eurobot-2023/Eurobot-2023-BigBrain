@@ -1,0 +1,3 @@
+float32 angle_start
+float32 angle_end
+float32 distance

@@ -4,6 +4,7 @@ from enum import IntEnum
 
 import rospy
 
+import eurobot2023.msg as msg
 import ros_tools as tools
 
 # TODO:Create messages for displacement, position and PID messages
@@ -20,7 +21,8 @@ class Position:
         self.x = x
         self.y = y
         self.angle = angle
-    
+
+
 class PidParameters:
     """ Parameters of a PID """
     def __init__(self, Kp, Ki, Kd=0.0):
@@ -42,9 +44,12 @@ class FlashMcQueenApi:
 
         self._define_publishers()
         self._define_subscribers()
+
+    def set_displacement(self, angle_start, angle_end, distance):
+        self._set_displacement_pub.publish(msg.Displacement(angle_start, angle_end, distance))
     
     def set_position(self, position):
-        self._set_position_pub.publish("{}, {}".format(position.x, position.y))
+        self._set_position_pub.publish(msg.Position(position.x, position.y))
 
     def set_rotation(self, angle):
         self._set_rotation_pub.publish(angle)
@@ -56,16 +61,24 @@ class FlashMcQueenApi:
             self._set_distance_mm_pub.publish(distance)
 
     def set_pid_left_wheel(self, pid_parameters):
-        self._set_pid_left_wheel_pub.publish(str(pid_parameters))
+        self._set_pid_left_wheel_pub.publish(msg.PidParameters(pid_parameters.Kp,  
+                                                                pid_parameters.Ki, 
+                                                                pid_parameters.d))
 
     def set_pid_right_wheel(self, pid_parameters):
-        self._set_pid_right_wheel_pub.publish(str(pid_parameters))
+        self._set_pid_right_wheel_pub.publish(msg.PidParameters(pid_parameters.Kp,  
+                                                                pid_parameters.Ki,  
+                                                                pid_parameters.Kd))
 
     def set_pid_position(self, pid_parameters):
-        self._set_pid_position_pub.publish(str(pid_parameters))
+        self._set_pid_position_pub.publish(msg.PidParameters(pid_parameters.Kp,  
+                                            pid_parameters.Ki,  
+                                            pid_parameters.Kd))
 
     def set_pid_angle(self, pid_parameters):
-        self._set_pid_angle_pub.publish(str(pid_parameters))
+        self._set_pid_angle_pub.publish(msg.PidParameters(pid_parameters.Kp,  
+                                                            pid_parameters.Ki,  
+                                                            pid_parameters.Kd))
 
     def _define_publishers(self):
         self._set_displacement_pub = tools.create_publisher('set-displacement')
