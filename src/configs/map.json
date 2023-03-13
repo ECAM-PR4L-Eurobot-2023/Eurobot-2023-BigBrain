@@ -1,0 +1,120 @@
+{
+    "map": {
+        "width": 2000,
+        "length": 3000,
+        "plates": {
+            "plate-1": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 225,
+                "y_pos": 2775
+            },
+            "plate-2": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 225,
+                "y_pos": 1875
+            },
+            "plate-3": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 225,
+                "y_pos": 1125
+            },
+            "plate-4": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 225,
+                "y_pos": 225
+            },
+            "plate-5": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 725,
+                "y_pos": 225
+            },
+            "plate-6": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 1275,
+                "y_pos": 225
+            },
+            "plate-7": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 1775,
+                "y_pos": 225
+            },
+            "plate-8": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 1775,
+                "y_pos": 1125
+            },
+            "plate-9": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 1775,
+                "y_pos": 1875
+            },
+            "plate-10": {
+                "x_size": 450,
+                "y_size": 450,
+                "x_pos": 1775,
+                "y_pos": 2775
+            }
+        },
+        "cherries": {
+            "left": {
+                "x_size": 30,
+                "y_size": 300,
+                "x_pos": 15,
+                "y_pos": 1500
+            },
+            "right": {
+                "x_size": 30,
+                "y_size": 300,
+                "x_pos": 1985,
+                "y_pos": 1500
+            },
+            "up": {
+                "x_size": 30,
+                "y_size": 300,
+                "x_pos": 1000,
+                "y_pos": 2850
+            },
+            "down": {
+                "x_size": 30,
+                "y_size": 300,
+                "x_pos": 1000,
+                "y_pos": 150
+            }
+        },
+        "atuco-tag": {
+            "tag-20": {
+                "x_size": 100,
+                "y_size": 100,
+                "x_pos": 570,
+                "y_pos": 2425
+            },
+            "tag-21": {
+                "x_size": 100,
+                "y_size": 100,
+                "x_pos": 1430,
+                "y_pos": 2425
+            },
+            "tag-22": {
+                "x_size": 100,
+                "y_size": 100,
+                "x_pos": 570,
+                "y_pos": 575
+            },
+            "tag-23": {
+                "x_size": 100,
+                "y_size": 100,
+                "x_pos": 1430,
+                "y_pos": 575
+            }
+        }
+    }
+}
