@@ -46,8 +46,13 @@ class FlashMcQueenApi:
         self._define_publishers()
         self._define_subscribers()
 
-    def set_displacement(self, angle_start, angle_end, distance):
-        self._set_displacement_pub.publish(msg.Displacement(angle_start, angle_end, distance))
+    def set_displacement(self, displacement):
+        self._set_displacement_pub.publish(
+            msg.Displacement(
+                displacement.angle_start, 
+                displacement.angle_end, 
+                displacement.distance
+            ))
     
     def set_position(self, position):
         self._set_position_pub.publish(msg.Position(position.x, position.y))

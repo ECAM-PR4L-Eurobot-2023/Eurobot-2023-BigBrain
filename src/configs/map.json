@@ -7,61 +7,72 @@
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 225,
-                "y_pos": 2775
+                "y_pos": 2775,
+                "color": "blue"
             },
             "plate-2": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 225,
-                "y_pos": 1875
+                "y_pos": 1875,
+                "color": "green"
+                
             },
             "plate-3": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 225,
-                "y_pos": 1125
+                "y_pos": 1125,
+                "color": "blue"
             },
             "plate-4": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 225,
-                "y_pos": 225
+                "y_pos": 225,
+                "color": "green"
             },
             "plate-5": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 725,
-                "y_pos": 225
+                "y_pos": 225,
+                "color": "blue"
             },
             "plate-6": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1275,
-                "y_pos": 225
+                "y_pos": 225,
+                "color": "green"
             },
             "plate-7": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
-                "y_pos": 225
+                "y_pos": 225,
+                "color": "blue"
             },
             "plate-8": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
-                "y_pos": 1125
+                "y_pos": 1125,
+                "color": "green"
             },
             "plate-9": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
-                "y_pos": 1875
+                "y_pos": 1875,
+                "color": "blue"
             },
             "plate-10": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
-                "y_pos": 2775
+                "y_pos": 2775,
+                "color": "green"
             }
         },
         "cherries": {

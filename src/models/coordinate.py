@@ -11,3 +11,6 @@ class Coordinate:
         string += "angle: {}\n".format(self.angle)
 
         return string
+
+    def __eq__(self, other):
+        return (self.x == other.x) and (self.y == other.y)

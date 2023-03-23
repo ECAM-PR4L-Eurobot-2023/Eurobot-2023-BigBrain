@@ -53,6 +53,7 @@ add_message_files(
   Displacement.msg
   PidParameters.msg
   Position.msg
+  Coordinate.msg
 )
 
 ## Generate services in the 'srv' folder

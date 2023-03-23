@@ -23,7 +23,7 @@ TOPIC_SET_POSITION = "{}/position/set".format(FLASH_MCQUEEN_DATA_TOPIC_HEADER)
 TOPIC_SET_ROTATION = "{}/rotation/set".format(FLASH_MCQUEEN_DATA_TOPIC_HEADER)
 TOPIC_SET_DISTANCE_TICKS = "{}/distance/set/ticks".format(FLASH_MCQUEEN_DATA_TOPIC_HEADER)
 TOPIC_SET_DISTANCE_MM = "{}/distance/set/mm".format(FLASH_MCQUEEN_DATA_TOPIC_HEADER)
-TOPIC_DISTANCE_REACHED = "{}/data/distance/reach".format(FLASH_MCQUEEN_DATA_TOPIC_HEADER)
+TOPIC_DISTANCE_REACHED = "{}/distance/reach".format(FLASH_MCQUEEN_DATA_TOPIC_HEADER)
 TOPIC_URGENCY_STOP = "{}/urgency-stop".format(FLASH_MCQUEEN_TOPIC_HEADER)
 TOPIC_DATA_ALL = "{}/all".format(FLASH_MCQUEEN_DATA_TOPIC_HEADER)
 TOPIC_SET_PID_LEFT_WHEEL = "{}/wheel/left/set".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
@@ -47,7 +47,7 @@ TOPICS = {
     'set-distance-mm': {'topic': TOPIC_SET_DISTANCE_MM, 'data-type': std_msgs.Float32},
     'distance-reached': {'topic': TOPIC_DISTANCE_REACHED, 'data-type': std_msgs.Empty},
     'urgency-stop': {'topic': TOPIC_URGENCY_STOP, 'data-type': std_msgs.Int16},
-    'get-data-all': {'topic': TOPIC_DATA_ALL, 'data-type': msg.Displacement},
+    'get-data-all': {'topic': TOPIC_DATA_ALL, 'data-type': msg.Coordinate},
     'set-pid-left-wheel': {'topic': TOPIC_SET_PID_LEFT_WHEEL, 'data-type': msg.PidParameters},
     'set-pid-right-wheel': {'topic': TOPIC_SET_PID_RIGHT_WHEEL, 'data-type': msg.PidParameters},
     'set-pid-position': {'topic': TOPIC_SET_PID_POSITION, 'data-type': msg.PidParameters},
