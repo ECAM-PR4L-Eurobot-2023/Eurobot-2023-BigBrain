@@ -46,6 +46,18 @@ class Strategy:
     def clear_queue(self):
         self._queue = []
 
+    def start(self):
+        self.reset()
+        self._cross_sequence()
+        self._go_to_destination()
+
+    def run(self):
+        if self._is_destination_reached:
+            if not self._queue:
+                self._cross_sequence()
+
+            self._go_to_destination()
+
     def _set_visited(self):
         if not self._current_destination:
             return
@@ -58,18 +70,6 @@ class Strategy:
             self._cherries_visited.add(key)
 
         print('plate visited: ', self._plates_visited)
-
-    def start(self):
-        self.reset()
-        self._cross_sequence()
-        self._go_to_destination()
-
-    def run(self):
-        if self._is_destination_reached:
-            if not self._queue:
-                self._cross_sequence()
-
-            self._go_to_destination()
 
     def _cross_sequence(self):
         CROSS_SEQUENCE = ['plate-1', 'plate-7', 'plate-4', 'plate-10']
