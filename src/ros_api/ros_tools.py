@@ -2,7 +2,7 @@
 
 import rospy
 
-from topics import DEFAULT_QUEUE_SIZE, TOPICS
+from ros_api.topics import DEFAULT_QUEUE_SIZE, TOPICS
 
 def default_callback(data):
    rospy.loginfo("{} - Received: {}".format(rospy.get_caller_id(), data))

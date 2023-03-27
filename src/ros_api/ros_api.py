@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 
-from flash_mcqueen_api import FlashMcQueenApi
+from ros_api.flash_mcqueen_api import FlashMcQueenApi
 
 NODE_NAME = "bigbrain"
 DEFAULT_RATE = 10

@@ -6,14 +6,15 @@ from modules.strategy import Strategy
 from ros_api.ros_api import RosApi
 
 MAP_CONFIG_FILE = './configs/map.json'
+START_PLATE = 'plate-4'
 
 
 class BigBrain:
     def __init__(self):
         self._map = MapBuilder.from_file(MAP_CONFIG_FILE)
-        self._current_position = Coordinate(x=225.0, y=225.0, angle=0.0)
+        self._current_position = self._load_current_position_from_plate(START_PLATE)
         self._ros_api = RosApi()
-        self._strategy = Strategy(self._ros_api, self._map, self._current_position, 'plate-4')
+        self._strategy = Strategy(self._ros_api, self._map, self._current_position, START_PLATE)
 
         # Set callbacks
         self._ros_api.flash_mcqueen.get_data_all_callback = self._on_get_data_all
@@ -31,6 +32,10 @@ class BigBrain:
     def run(self):
         while True:
             self._strategy.run()
+
+    def _load_current_position_from_plate(self, start_plate):
+        start_plate_obj = self._map.plates[start_plate]
+        return Coordinate(x=start_plate_obj['x_pos'], y=start_plate_obj['y_pos'], angle=0.0)
 
     def _on_get_data_all(self, data):
         print('--- Data all ---')
