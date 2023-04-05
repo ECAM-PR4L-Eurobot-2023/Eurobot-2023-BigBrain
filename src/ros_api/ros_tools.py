@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import rospy
 
 from ros_api.topics import DEFAULT_QUEUE_SIZE, TOPICS

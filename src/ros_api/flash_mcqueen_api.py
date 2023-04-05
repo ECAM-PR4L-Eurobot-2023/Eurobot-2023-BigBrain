@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from enum import IntEnum
 
 import eurobot2023.msg as msg
@@ -47,19 +45,20 @@ class FlashMcQueenApi:
     def set_displacement(self, displacement):
         self._set_displacement_pub.publish(
             msg.Displacement(
-                displacement.angle_start, 
-                displacement.angle_end, 
-                displacement.distance
+                angle_start=displacement.angle_start,
+                angle_end=displacement.angle_end,
+                x=displacement.x,
+                y=displacement.y,
             ))
     
     def set_position(self, position):
-        self._set_position_pub.publish(msg.Position(position.x, position.y))
+        self._set_position_pub.publish(msg.Position(int(position.x), int(position.y)))
 
     def set_rotation(self, angle):
         self._set_rotation_pub.publish(angle)
 
     def set_distance(self, distance, unit=DistanceUnitType.TICKS):
-        if unit == UnitType.TICKS:
+        if unit == DistanceUnitType.TICKS:
             self._set_distance_ticks_pub.publish(distance)
         else:
             self._set_distance_mm_pub.publish(distance)

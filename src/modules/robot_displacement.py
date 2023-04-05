@@ -7,12 +7,27 @@ from models.displacement import Displacement
 STEP_PROJECTION = 10
 LEFT_PLATES = {'plate-1', 'plate-2', 'plate-3', 'plate-4', 'plate-5'}
 RIGHT_PLATES = {'plate-6', 'plate-7', 'plate-8', 'plate-9', 'plate-10'}
+LEFT_MAP_CHERRIES = {'left', 'up'}
+RIGHT_MAP_CHERRIES = {'right', 'up'}
+X_SIZE_ROBOT = 320  # mm
+Y_SIZE_ROBOT = 230  # mm
+OFFSET_CENTER = 72  # mm 
 
 
 class RobotDisplacement:
     @classmethod
     def get_norm(cls, a, b):
         return math.sqrt((a ** 2) + (b ** 2))
+
+    @classmethod
+    def get_offset_center(cls, angle):
+        angle_radians = math.radians(angle)
+        
+        return Coordinate(
+            x = -OFFSET_CENTER * math.sin(angle_radians),
+            y = -OFFSET_CENTER * math.cos(angle_radians),
+            angle = 0.0,
+        )
 
     @classmethod
     def is_on_left(cls, game_map, position):
@@ -67,22 +82,50 @@ class RobotDisplacement:
         return game_map.plates[nearest_plates]
 
     @classmethod
-    def get_displacement_to_coordinate(cls, current_coordinate, dest_coordinate):
+    def get_displacement_to_coordinate(cls, key, current_coordinate, dest_coordinate):
         delta_x = current_coordinate.x - dest_coordinate.x
         delta_y = current_coordinate.y - dest_coordinate.y
         angle = cls.get_angle_to_coordinate(current_coordinate, dest_coordinate)
 
-        return Displacement(
-            distance=cls.get_norm(delta_x, delta_y),
+        # Set offset center
+        # delta_angle_radians = math.radians(angle - current_coordinate.angle)
+        # delta_x, delta_y = OFFSET_CENTER * math.sin(delta_angle_radians), OFFSET_CENTER * (1 - math.cos(delta_angle_radians))
+        # supposed_coordinate = Coordinate(
+        #     x=current_coordinate.x + delta_y * math.cos(current_coordinate.angle) - delta_x * math.sin(current_coordinate.angle),
+        #     y=current_coordinate.y - (delta_y * math.sin(current_coordinate.angle) + delta_x * math.cos(current_coordinate.angle)), 
+        #     angle=current_coordinate.angle)
+
+        # current_angle_radians = math.radians(current_coordinate.angle)
+        # delta_angle_radians = math.radians(angle - current_coordinate.angle)
+        # rotation_center_x, rotation_center_y = current_coordinate.x - OFFSET_CENTER * math.sin(current_angle_radians), current_coordinate.y - OFFSET_CENTER * math.cos(current_angle_radians)
+        # point_from_rotation_center_x, point_from_rotation_center_y = current_coordinate.x - rotation_center_x, current_coordinate.y - rotation_center_y
+        # rotated_point_x = point_from_rotation_center_x * math.cos(delta_angle_radians) - point_from_rotation_center_y * math.sin(delta_angle_radians)
+        # rotated_point_y = point_from_rotation_center_x * math.sin(delta_angle_radians) + point_from_rotation_center_y * math.cos(delta_angle_radians)
+        # supposed_coordinate = Coordinate(
+        #     x=rotated_point_x + rotation_center_x,
+        #     y=rotated_point_y + rotation_center_y,
+        #     angle=current_coordinate.angle)
+
+        offset_center = cls.get_offset_center(angle)
+
+        disp = Displacement(
+            x=dest_coordinate.x + offset_center.x,
+            y=dest_coordinate.y + offset_center.y,
             angle_start=angle,
             angle_end=angle,
         )
 
+        print(key)
+        print(str(disp))
+        print('current coord: ', str(current_coordinate))
+        print('dest_coordinate: ', str(dest_coordinate))
+        return disp
+
     @classmethod
-    def get_displacement_to_map_item(cls, current_coordinate, map_item):
+    def get_displacement_to_map_item(cls, key, current_coordinate, map_item):
         dest_coordinate = Coordinate(x=map_item['x_pos'], y=map_item['y_pos'], angle=0.0)
         
-        return cls.get_displacement_to_coordinate(current_coordinate, dest_coordinate)
+        return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
     @classmethod
     def get_angle_to_coordinate(cls, current_coordinate, dest_coordinate):
         if current_coordinate == dest_coordinate:
@@ -116,3 +159,48 @@ class RobotDisplacement:
         dest_coordinate = Coordinate(x=map_item['x_pos'], y=map_item['y_pos'], angle=0.0)
 
         return cls.get_angle_to_coordinate(current_coordinate, dest_coordinate)
+
+    @classmethod
+    def _get_displacement_start_collect_cherries(cls, current_coordinate, cherry_key, map):
+        if cherry_key in {'left', 'right'}:
+            # Compute y
+            if cls.is_on_top(map, current_coordinate):
+                y = map.cherries[cherry_key]['y_pos'] - (map.cherries[cherry_key]['y_size'] / 2) - \
+                    10.0
+                angle_end = 180.0
+            else:
+                y = map.cherries[cherry_key]['y_pos'] + (map.cherries[cherry_key]['y_size'] / 2) + \
+                    10.0
+                angle_end = 0.0
+            
+            # Compute x
+            if cherry_key == 'left':
+                x = map.cherries[cherry_key]['x_pos'] + (map.cherries[cherry_key]['x_size'] / 2) + \
+                    (X_SIZE_ROBOT / 2) + 10.0
+            else:
+                x = map.cherries[cherry_key]['x_pos'] - (map.cherries[cherry_key]['x_size'] / 2) - \
+                    (X_SIZE_ROBOT / 2) + 10.0
+        elif cherry_key in {'up', 'down'}:
+            # Compute y
+            if cherry_key == 'top':
+                y = map.cherries[cherry_key]['y_pos'] - (map.cherries[cherry_key]['y_size'] / 2) - \
+                    - Y_SIZE_ROBOT - 10.0
+                angle_end = 180.0
+            else:
+                y = map.cherries[cherry_key]['y_pos'] + (map.cherries[cherry_key]['y_size'] / 2) + \
+                    - Y_SIZE_ROBOT - 10.0
+                angle_end = 0.0
+            
+            # Compute x
+            if cls.is_on_left(map, current_coordinate):
+                x = map.cherries[cherry_key]['x_pos'] + (map.cherries[cherry_key]['x_size'] / 2) + \
+                    (X_SIZE_ROBOT / 2) + 10.0
+            else:
+                x = map.cherries[cherry_key]['x_pos'] - (map.cherries[cherry_key]['x_size'] / 2) - \
+                    (X_SIZE_ROBOT / 2) + 10.0
+        
+        dest_coordinate = Coordinate(x=x, y=y, angle=0.0)
+        displacement = cls.get_displacement_to_coordinate(cherry_key, current_coordinate, dest_coordinate)
+        displacement.angle_end = angle_end
+
+        return displacement

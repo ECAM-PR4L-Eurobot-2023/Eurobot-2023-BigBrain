@@ -3,11 +3,7 @@ import time
 from models.action import Action
 from models.coordinate import Coordinate
 from models.displacement import Displacement
-from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLATES
-
-
-LEFT_MAP_CHERRIES = {'left', 'up'}
-RIGHT_MAP_CHERRIES = {'right', 'up'}
+from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLATES, LEFT_MAP_CHERRIES, RIGHT_MAP_CHERRIES
 
 
 class Strategy:
@@ -39,6 +35,9 @@ class Strategy:
         self._cherries_visited.clear()
         self._plates_visited.clear()
 
+        # Set the start position
+        self._ros_api.flash_mcqueen.set_position(self.current_position)
+
     def set_destination_reached(self):
         self._is_destination_reached = True
         self._set_visited()
@@ -53,14 +52,19 @@ class Strategy:
 
     def run(self):
         if self._is_destination_reached:
+            time.sleep(5)
             if not self._queue:
                 self._cross_sequence()
+
 
             self._go_to_destination()
 
     def _set_visited(self):
         if not self._current_destination:
             return
+
+        # if self._current_destination.end_coord.x - 10.0 < self.current_position.x < self._current_destination.end_coord.x + 10.0 and \
+        #     self._current_destination.end_coord.y - 10.0 < self.current_position.y < self._current_destination.end_coord.y+ 10.0:
 
         key = self._current_destination.key
 
@@ -72,21 +76,25 @@ class Strategy:
         print('plate visited: ', self._plates_visited)
 
     def _cross_sequence(self):
-        CROSS_SEQUENCE = ['plate-1', 'plate-7', 'plate-4', 'plate-10']
+        CROSS_SEQUENCE = ['plate-3', 'plate-5', 'plate-4']
 
         map_center = Coordinate(x=self._map.width / 2, y=self._map.length / 2, angle=0.0)
         disp = Action(
             key='', 
             start_coord=self.current_position, 
-            displacement=RobotDisplacement.get_displacement_to_coordinate(self.current_position, map_center)
+            end_coord=map_center,
+            displacement=RobotDisplacement.get_displacement_to_coordinate('a', self.current_position, map_center)
         )
 
         for plate in CROSS_SEQUENCE:
             if plate not in self._plates_visited:
+                end_coord = Coordinate(x=self._map.plates[plate]['x_pos'], y=self._map.plates[plate]['y_pos'], angle=0.0)
                 disp = Action(
                     key=plate,
                     start_coord=self.current_position,
+                    end_coord=end_coord,
                     displacement=RobotDisplacement.get_displacement_to_map_item(
+                    plate,
                         self.current_position, 
                         self._map.plates[plate])
                 )
@@ -118,5 +126,5 @@ class Strategy:
         return RobotDisplacement.get_nearest_cherries(self._map, self.current_position, 
             on_side_cherry | self._cherries_visited)
 
-    def _is_cherries_available():
+    def _is_cherries_available(self):
         return len(self._cherries_visited)

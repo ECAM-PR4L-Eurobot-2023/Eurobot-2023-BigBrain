@@ -1,7 +1,7 @@
-#!/usr/bin/env python
 import rospy
 
 from ros_api.flash_mcqueen_api import FlashMcQueenApi
+from ros_api.general_purpose_api import GeneralPurposeApi
 
 NODE_NAME = "bigbrain"
 DEFAULT_RATE = 10
@@ -10,16 +10,18 @@ class RosApi:
     """ API for ROS communication """
     def __init__(self, rate=DEFAULT_RATE):
         self.flash_mcqueen = FlashMcQueenApi()
+        self.general_purpose = GeneralPurposeApi()
         self.rate = rate
 
     def start_node(self):
         self.flash_mcqueen.start()
+        self.general_purpose.start()
 
         # Init ROS node
         rospy.init_node(NODE_NAME)
 
         # Set loop rate
-        rate = rospy.Rate(10)
+        # rate = rospy.Rate(25)
 
     def run(self):
         rospy.spin()

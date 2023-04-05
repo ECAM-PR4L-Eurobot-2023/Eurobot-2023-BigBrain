@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Topics related to all the nodes
 """
@@ -35,6 +33,18 @@ TOPIC_GET_PID_RIGHT_WHEEL = "{}/wheel/right/get".format(FLASH_MCQUEEN_PID_TOPIC_
 TOPIC_GET_PID_POSITION = "{}/position/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
 TOPIC_GET_PID_ANGLE = "{}/angle/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
 
+#######################################################################
+#                          General Purpose
+#######################################################################
+# General Purpose header
+GENERAL_PURPOSE_HEADER = '/robot'
+GENERAL_PURPOSE_FAN_HEADER = '{}/fan'.format(GENERAL_PURPOSE_HEADER)
+
+# General Purpose topics
+GENERAL_PURPOSE_SET_DISPLAY = '{}/display/set'.format(GENERAL_PURPOSE_HEADER)
+GENERAL_PURPOSE_START_PLATE = '{}/startPlate/set'.format(GENERAL_PURPOSE_HEADER)
+GENERAL_PURPOSE_FAN_ON = '{}/on'.format(GENERAL_PURPOSE_FAN_HEADER)
+GENERAL_PURPOSE_FAN_OFF = '{}/off'.format(GENERAL_PURPOSE_FAN_HEADER)
 
 #######################################################################
 #                              Topics
@@ -56,4 +66,8 @@ TOPICS = {
     'get-pid-right-wheel': {'topic': TOPIC_GET_PID_RIGHT_WHEEL, 'data-type': msg.PidParameters},
     'get-pid-position': {'topic': TOPIC_GET_PID_POSITION, 'data-type': msg.PidParameters},
     'get-pid-angle': {'topic': TOPIC_GET_PID_ANGLE, 'data-type': msg.PidParameters},
+    'set-display': {'topic': GENERAL_PURPOSE_SET_DISPLAY, 'data-type': std_msgs.Int16},
+    'start-plate': {'topic': GENERAL_PURPOSE_START_PLATE, 'data-type': std_msgs.Int16},
+    'fan-on': {'topic': GENERAL_PURPOSE_FAN_ON, 'data-type': std_msgs.Int16},
+    'fan-off': {'topic': GENERAL_PURPOSE_FAN_OFF, 'data-type': std_msgs.Empty},
 }
