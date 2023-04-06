@@ -21,10 +21,15 @@ class BigBrain:
         self._strategy = Strategy(self._ros_api, self._map, self._current_position, START_PLATE)
 
         # Set callbacks
+        self._ros_api.flash_mcqueen.urgency_stop_callback = self._on_urgency_stop
         self._ros_api.flash_mcqueen.get_data_all_callback = self._on_get_data_all
         self._ros_api.flash_mcqueen.distance_reached_callback = self._on_distance_reached
 
         self._ros_api.start_node()
+        self.dest_reach = True
+        # self.dir = 'up'
+        # self._chrono = time.time()
+        # self._to_stop = True
         # time.sleep(1)
 
         # self._ros_thread_handler = threading.Thread(target=self._ros_api_thread, daemon=True)
@@ -44,42 +49,46 @@ class BigBrain:
         # while True:
         #     if self.dest_reach:
         #         self.dest_reach = False
+
         #         if self.dir == 'up':
         #             self.dir = 'right'
         #             self._ros_api.flash_mcqueen.set_displacement(
-        #                 RobotDisplacement.get_displacement_to_coordinate(
-        #                     '',
-        #                     self._current_position,
-        #                     Coordinate(x=0, y=1000, angle=0.0,),
+        #                 Displacement(
+        #                     angle_start=0.0,
+        #                     angle_end=90.0,
+        #                     x=self._current_position.x,
+        #                     y=2000,
         #                     backward=False,
         #                 ))
         #         elif self.dir == "right":
         #             self.dir = 'down'
         #             self._ros_api.flash_mcqueen.set_displacement(
-        #                 RobotDisplacement.get_displacement_to_coordinate(
-        #                     '',
-        #                     self._current_position,
-        #                     Coordinate(x=1000, y=1000, angle=0.0,),
+        #                 Displacement(
+        #                     angle_start=90.0,
+        #                     angle_end=90.0,
+        #                     x=self._current_position.x,
+        #                     y=self._current_position.y,
         #                     backward=False,
         #                 ))
         #         elif self.dir == "down":
-        #             self.dir = 'left'
+        #             # self.dir = 'left'
         #             self._ros_api.flash_mcqueen.set_displacement(
-        #                 RobotDisplacement.get_displacement_to_coordinate(
-        #                     '',
-        #                     self._current_position,
-        #                     Coordinate(x=1000, y=0, angle=0.0,),
+        #                 Displacement(
+        #                     angle_start=180.0,
+        #                     angle_end=180.0,
+        #                     x=self._current_position.x,
+        #                     y=0.0,
         #                     backward=False,
         #                 ))
-        #         elif self.dir == "left":
-        #             self.dir = 'left'
-                    # self._ros_api.flash_mcqueen.set_displacement(
-                    #     RobotDisplacement.get_displacement_to_coordinate(
-                    #         '',
-                    #         self._current_position,
-                    #         Coordinate(x=0, y=0, angle=0.0,),
-                    #         backward=True,
-                    #     ))
+                # elif self.dir == "left":
+                #     self.dir = 'left'
+                #     self._ros_api.flash_mcqueen.set_displacement(
+                #         RobotDisplacement.get_displacement_to_coordinate(
+                #             '',
+                #             self._current_position,
+                #             Coordinate(x=0, y=0, angle=0.0,),
+                #             backward=True,
+                #         ))
         while True:
             self._strategy.run()
 
@@ -96,8 +105,8 @@ class BigBrain:
             angle=0.0)
 
     def _on_get_data_all(self, data):
-        print(f'--- Data all ---')
-        print(data.x, data.y, data.angle)
+        # print(f'--- Data all ---')
+        # print(data.x, data.y, data.angle)
         self._current_position.x = data.x
         self._current_position.y = data.y
         self._current_position.angle = data.angle
@@ -105,7 +114,12 @@ class BigBrain:
 
     def _on_distance_reached(self, *arg, **kwargs):
         print('--- Distance reached ---')
+        self.dest_reach = True
         self._strategy.set_destination_reached()
+
+    def _on_urgency_stop(self, data):
+        print('urgency-stop: ', data)
+        self._ros_api.flash_mcqueen.set_stop()
 
 
 if __name__ == '__main__':
