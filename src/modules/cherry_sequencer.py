@@ -47,7 +47,7 @@ class CherrySequencer:
             if self.cherry in {'left', 'right'}:
                 print('Turn on fan')
                 self._ros_api.general_purpose.turn_on_fan(1)
-                # self._reduce_speed()
+                self._reduce_speed()
                 self._state = SequencerState.PICK_UP
 
                 return Action(
@@ -72,7 +72,7 @@ class CherrySequencer:
             self._state = SequencerState.WAIT
             print('turn off fan')
             self._ros_api.general_purpose.turn_off_fan()
-            # self._set_normal_speed()
+            self._set_normal_speed()
 
             return Action(
                     key=self.cherry,
@@ -84,7 +84,7 @@ class CherrySequencer:
         elif self._state == SequencerState.GET_IN:
             print('GET_IN')
             self._ros_api.general_purpose.turn_on_fan(1)
-            # self._reduce_speed()
+            self._reduce_speed()
             self._state = SequencerState.PICK_UP
 
             return Action(
