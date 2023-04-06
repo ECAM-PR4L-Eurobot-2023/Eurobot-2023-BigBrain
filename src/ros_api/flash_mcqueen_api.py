@@ -49,6 +49,7 @@ class FlashMcQueenApi:
                 angle_end=displacement.angle_end,
                 x=displacement.x,
                 y=displacement.y,
+                backward=displacement.backward,
             ))
     
     def set_position(self, position):
@@ -83,6 +84,12 @@ class FlashMcQueenApi:
                                                             pid_parameters.Ki,  
                                                             pid_parameters.Kd))
 
+    def set_max_speed(self, max_speed):
+        self._set_max_speed.publish(max_speed)
+
+    def set_stop(self):
+        self._set_stop.publish()
+
     def _define_publishers(self):
         self._set_displacement_pub = tools.create_publisher('set-displacement')
         self._set_position_pub = tools.create_publisher('set-position')
@@ -93,6 +100,8 @@ class FlashMcQueenApi:
         self._set_pid_left_right_pub = tools.create_publisher('set-pid-right-wheel')
         self._set_pid_position_pub = tools.create_publisher('set-pid-position')
         self._set_pid_angle_pub = tools.create_publisher('set-pid-angle')
+        self._set_max_speed = tools.create_publisher('set-max-speed')
+        self._set_stop = tools.create_publisher('set-stop')
 
     def _define_subscribers(self):
         self._get_data_all_sub = tools.create_subscriber('get-data-all', self.get_data_all_callback)

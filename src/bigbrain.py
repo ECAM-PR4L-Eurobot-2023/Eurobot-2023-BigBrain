@@ -3,13 +3,14 @@
 import time
 
 from builders.map_builder import MapBuilder
+from models.coordinate import Coordinate
 from modules.robot_displacement import RobotDisplacement
 from modules.strategy import Strategy
 from ros_api.ros_api import RosApi
+from models.displacement import Displacement
 
 MAP_CONFIG_FILE = './configs/map.json'
 START_PLATE = 'plate-4'
-counter = 0
 
 
 class BigBrain:
@@ -24,6 +25,7 @@ class BigBrain:
         self._ros_api.flash_mcqueen.distance_reached_callback = self._on_distance_reached
 
         self._ros_api.start_node()
+        # time.sleep(1)
 
         # self._ros_thread_handler = threading.Thread(target=self._ros_api_thread, daemon=True)
 
@@ -39,6 +41,45 @@ class BigBrain:
         self._strategy.start()
 
     def run(self):
+        # while True:
+        #     if self.dest_reach:
+        #         self.dest_reach = False
+        #         if self.dir == 'up':
+        #             self.dir = 'right'
+        #             self._ros_api.flash_mcqueen.set_displacement(
+        #                 RobotDisplacement.get_displacement_to_coordinate(
+        #                     '',
+        #                     self._current_position,
+        #                     Coordinate(x=0, y=1000, angle=0.0,),
+        #                     backward=False,
+        #                 ))
+        #         elif self.dir == "right":
+        #             self.dir = 'down'
+        #             self._ros_api.flash_mcqueen.set_displacement(
+        #                 RobotDisplacement.get_displacement_to_coordinate(
+        #                     '',
+        #                     self._current_position,
+        #                     Coordinate(x=1000, y=1000, angle=0.0,),
+        #                     backward=False,
+        #                 ))
+        #         elif self.dir == "down":
+        #             self.dir = 'left'
+        #             self._ros_api.flash_mcqueen.set_displacement(
+        #                 RobotDisplacement.get_displacement_to_coordinate(
+        #                     '',
+        #                     self._current_position,
+        #                     Coordinate(x=1000, y=0, angle=0.0,),
+        #                     backward=False,
+        #                 ))
+        #         elif self.dir == "left":
+        #             self.dir = 'left'
+                    # self._ros_api.flash_mcqueen.set_displacement(
+                    #     RobotDisplacement.get_displacement_to_coordinate(
+                    #         '',
+                    #         self._current_position,
+                    #         Coordinate(x=0, y=0, angle=0.0,),
+                    #         backward=True,
+                    #     ))
         while True:
             self._strategy.run()
 
@@ -55,9 +96,7 @@ class BigBrain:
             angle=0.0)
 
     def _on_get_data_all(self, data):
-        global counter
-        print(f'--- Data all {counter}---')
-        counter += 1
+        print(f'--- Data all ---')
         print(data.x, data.y, data.angle)
         self._current_position.x = data.x
         self._current_position.y = data.y
@@ -70,7 +109,8 @@ class BigBrain:
 
 
 if __name__ == '__main__':
-    from models.coordinate import Coordinate
     bigbrain = BigBrain()
     bigbrain.start()
+
+
     bigbrain.run()

@@ -32,6 +32,8 @@ TOPIC_GET_PID_LEFT_WHEEL = "{}/wheel/left/get".format(FLASH_MCQUEEN_PID_TOPIC_HE
 TOPIC_GET_PID_RIGHT_WHEEL = "{}/wheel/right/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
 TOPIC_GET_PID_POSITION = "{}/position/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
 TOPIC_GET_PID_ANGLE = "{}/angle/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
+TOPIC_SET_MAX_SPEED = "{}/max-speed/set".format(FLASH_MCQUEEN_TOPIC_HEADER)
+TOPIC_SET_STOP = "{}/stop".format(FLASH_MCQUEEN_TOPIC_HEADER)
 
 #######################################################################
 #                          General Purpose
@@ -70,4 +72,6 @@ TOPICS = {
     'start-plate': {'topic': GENERAL_PURPOSE_START_PLATE, 'data-type': std_msgs.Int16},
     'fan-on': {'topic': GENERAL_PURPOSE_FAN_ON, 'data-type': std_msgs.Int16},
     'fan-off': {'topic': GENERAL_PURPOSE_FAN_OFF, 'data-type': std_msgs.Empty},
+    'set-max-speed': {'topic': TOPIC_SET_MAX_SPEED, 'data-type': std_msgs.Float32},
+    'set-stop': {'topic': TOPIC_SET_STOP, 'data-type': std_msgs.Empty},
 }

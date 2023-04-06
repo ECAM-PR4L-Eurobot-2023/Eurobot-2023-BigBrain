@@ -3,6 +3,7 @@ import time
 from models.action import Action
 from models.coordinate import Coordinate
 from models.displacement import Displacement
+from modules.cherry_sequencer import CherrySequencer
 from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLATES, LEFT_MAP_CHERRIES, RIGHT_MAP_CHERRIES
 
 
@@ -11,6 +12,7 @@ class Strategy:
         self._ros_api = ros_api
         self._map = game_map
         self._queue = []
+        self._start = False
         self._is_destination_reached = False
 
         # Memorize the actions done during the game
@@ -18,7 +20,7 @@ class Strategy:
         self._plates_visited = set()
 
         # Store the current robot position
-        self.current_position = current_position
+        self._current_position = current_position
         self._current_destination = None
 
         # Store the start plate to adapt the strategy
@@ -27,16 +29,27 @@ class Strategy:
         # Store the time from the start of the game
         self._chrono = time.time()
 
-        self.current_position.angle = 250.0
+        # Sequencer
+        self._cherry_sequencer = CherrySequencer(self._ros_api, self._map, self._current_position, '')
+
+    @property
+    def current_position(self):
+        return self._current_destination
+
+    @current_position.setter
+    def current_position(self, current_position):
+        self._current_position = current_position
+        self._cherry_sequencer.current_position = current_position
 
     def reset(self):
+        self._chrono = time.time()
         self._is_destination_reached = False
         self.clear_queue()
         self._cherries_visited.clear()
         self._plates_visited.clear()
 
         # Set the start position
-        self._ros_api.flash_mcqueen.set_position(self.current_position)
+        self._ros_api.flash_mcqueen.set_position(self._current_position)
 
     def set_destination_reached(self):
         self._is_destination_reached = True
@@ -47,14 +60,24 @@ class Strategy:
 
     def start(self):
         self.reset()
-        self._cross_sequence()
-        self._go_to_destination()
+
+        self._start = True
+        # self._cross_sequence()
+        # self._go_to_destination()
+
+        # Start cherry
+        self._cherry_sequencer.cherry = 'down'
+        self._cherry_sequencer.reset()
 
     def run(self):
-        if self._is_destination_reached:
-            time.sleep(5)
+        if self._is_destination_reached or (self._start and time.time() - self._chrono > 5):
+            self._start = False
+
             if not self._queue:
-                self._cross_sequence()
+                move = self._cherry_sequencer.run()
+
+                if move:
+                    self._queue.append(move)
 
 
             self._go_to_destination()
@@ -81,9 +104,9 @@ class Strategy:
         map_center = Coordinate(x=self._map.width / 2, y=self._map.length / 2, angle=0.0)
         disp = Action(
             key='', 
-            start_coord=self.current_position, 
+            start_coord=self._current_position, 
             end_coord=map_center,
-            displacement=RobotDisplacement.get_displacement_to_coordinate('a', self.current_position, map_center)
+            displacement=RobotDisplacement.get_displacement_to_coordinate('a', self._current_position, map_center),
         )
 
         for plate in CROSS_SEQUENCE:
@@ -91,11 +114,10 @@ class Strategy:
                 end_coord = Coordinate(x=self._map.plates[plate]['x_pos'], y=self._map.plates[plate]['y_pos'], angle=0.0)
                 disp = Action(
                     key=plate,
-                    start_coord=self.current_position,
-                    end_coord=end_coord,
+                    start_coord=self._current_position,
                     displacement=RobotDisplacement.get_displacement_to_map_item(
                     plate,
-                        self.current_position, 
+                        self._current_position, 
                         self._map.plates[plate])
                 )
 
@@ -123,7 +145,7 @@ class Strategy:
         on_side_cherry = LEFT_MAP_CHERRIES if (self._start_plate in LEFT_PLATES) \
             else RIGHT_MAP_CHERRIES
 
-        return RobotDisplacement.get_nearest_cherries(self._map, self.current_position, 
+        return RobotDisplacement.get_nearest_cherries(self._map, self._current_position, 
             on_side_cherry | self._cherries_visited)
 
     def _is_cherries_available(self):

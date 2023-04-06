@@ -13,8 +13,8 @@ class GeneralPurposeApi:
     def turn_on_fan(self, val):
         self._set_fan_on.publish(val)
 
-    def turn_off_fan(self, val):
-        self._set_fan_off.publish(val)
+    def turn_off_fan(self):
+        self._set_fan_off.publish()
 
     def _define_publishers(self):
         self._set_display_pub = tools.create_publisher('set-display')
