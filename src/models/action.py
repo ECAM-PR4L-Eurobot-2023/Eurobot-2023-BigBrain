@@ -15,3 +15,11 @@ class Action:
     @property
     def displacement(self):
         return self._displacement
+
+    def __str__(self):
+        string = "--- Action ---\n"
+        string += f"key: {self._key}\n"
+        string += f"start coordinate: {self._start_coord}\n"
+        string += f"displacement: {self._displacement}\n"
+
+        return string

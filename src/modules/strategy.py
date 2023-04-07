@@ -66,11 +66,11 @@ class Strategy:
         # self._go_to_destination()
 
         # Start cherry
-        self._cherry_sequencer.cherry = 'down'
+        self._cherry_sequencer.cherry = 'left'
         self._cherry_sequencer.reset()
 
     def run(self):
-        if self._is_destination_reached or (self._start and time.time() - self._chrono > 5):
+        if self._is_destination_reached or (self._start and time.time() - self._chrono > 0.5):
             self._start = False
 
             if not self._queue:
@@ -96,7 +96,6 @@ class Strategy:
         elif key in self._map.cherries:
             self._cherries_visited.add(key)
 
-        print('plate visited: ', self._plates_visited)
 
     def _cross_sequence(self):
         CROSS_SEQUENCE = ['plate-3', 'plate-5', 'plate-4']

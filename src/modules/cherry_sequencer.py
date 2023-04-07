@@ -30,8 +30,6 @@ class CherrySequencer:
 
     def run(self):
         if self._state == SequencerState.WAIT:
-            print('WAIT')
-            # Calcul displacement to nearest cherry
             self._state = SequencerState.GO_TO_CHERRIES
 
             return Action(
@@ -43,17 +41,16 @@ class CherrySequencer:
                     self._map,
             ))
         elif self._state == SequencerState.GO_TO_CHERRIES:
-            print('GO_TO_CHERRIES')
             self._reduce_speed()
+
             if self.cherry in {'left', 'right'}:
-                print('Turn on fan')
                 self._ros_api.general_purpose.turn_on_fan(1)
                 self._state = SequencerState.PICK_UP
 
                 return Action(
                     key=self.cherry,
                     start_coord=self.current_position,
-                    displacement=RobotDisplacement.backtrace_cherry_pickup(
+                    displacement=RobotDisplacement.forward_cherry_pickup(
                         self._map, self.current_position, self.cherry
                     )
                 )
@@ -68,21 +65,19 @@ class CherrySequencer:
                     )
                 )
         elif self._state == SequencerState.PICK_UP:
-            print('PICK_UP')
             self._state = SequencerState.WAIT
-            print('turn off fan')
             self._ros_api.general_purpose.turn_off_fan()
             self._set_normal_speed()
 
             return Action(
                     key=self.cherry,
                     start_coord=self.current_position,
-                    displacement=RobotDisplacement.backtrace_cherry_pickup(
-                        self._map, self.current_position, self.cherry,
-                    )
+                    displacement=RobotDisplacement.get_displacement_to_map_item(
+                        'plate-1',
+                        self.current_position, 
+                        self._map.plates['plate-1'])
                 )
         elif self._state == SequencerState.GET_IN:
-            print('GET_IN')
             self._ros_api.general_purpose.turn_on_fan(1)
             # self._reduce_speed()
             self._state = SequencerState.PICK_UP
@@ -94,7 +89,6 @@ class CherrySequencer:
                     self._map, self.current_position, self.cherry,
                 )
             )
-            pass
         else:
             self._state = SequencerState.WAIT
 

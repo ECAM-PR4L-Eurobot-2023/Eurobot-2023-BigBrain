@@ -37,9 +37,11 @@ class RobotDisplacement:
     def is_on_write(cls, game_map, position):
         return not cls.is_on_left(game_map, position)
 
+    @classmethod
     def is_on_top(cls, game_map, position):
         return (game_map.length / 2) < position.y
 
+    @classmethod
     def is_on_bottom(cls, game_map, position):
         return not cls.is_on_top(game_map, position)
 
@@ -170,11 +172,11 @@ class RobotDisplacement:
         if cherry_key in {'left', 'right'}:
             # Compute y
             if cls.is_on_top(map, current_coordinate):
-                y = cherries[cherry_key]['y_pos'] - (cherries[cherry_key]['y_size'] / 2) - \
+                y = cherries[cherry_key]['y_pos'] + (cherries[cherry_key]['y_size'] / 2) + \
                     10.0
                 angle_end = 180.0
             else:
-                y = cherries[cherry_key]['y_pos'] + (cherries[cherry_key]['y_size'] / 2) + \
+                y = cherries[cherry_key]['y_pos'] - (cherries[cherry_key]['y_size'] / 2) - \
                     10.0
                 angle_end = 0.0
             
@@ -230,6 +232,28 @@ class RobotDisplacement:
             )
 
         return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate, True)
+
+    @classmethod
+    def forward_cherry_pickup(cls, map, current_coordinate, key):
+        if key not in {'left', 'right'}:
+            return None
+
+        if cls.is_on_top(map, current_coordinate):
+            print("YOURE ON TOP")
+            dest_coordinate = Coordinate(
+                x=current_coordinate.x,
+                y=map.cherries[key]['y_pos'] - map.cherries[key]['y_size'] / 2,
+                angle=0.0,
+            )
+        else:
+            print("YOURE ON DOWN")
+            dest_coordinate = Coordinate(
+                x=current_coordinate.x,
+                y=map.cherries[key]['y_pos'] + map.cherries[key]['y_size'] / 2,
+                angle=0.0,
+            )
+
+        return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
 
     @classmethod
     def getout_cherry(cls, map, current_coordinate, key):

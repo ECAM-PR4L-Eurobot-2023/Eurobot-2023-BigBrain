@@ -119,7 +119,7 @@ class BigBrain:
 
     def _on_urgency_stop(self, data):
         print('urgency-stop: ', data)
-        self._ros_api.flash_mcqueen.set_stop()
+        # self._ros_api.flash_mcqueen.set_stop()
 
 
 if __name__ == '__main__':
