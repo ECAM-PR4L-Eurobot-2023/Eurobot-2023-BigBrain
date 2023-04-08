@@ -32,12 +32,6 @@ class BigBrain:
         # self._to_stop = True
         # time.sleep(1)
 
-        # self._ros_thread_handler = threading.Thread(target=self._ros_api_thread, daemon=True)
-
-    def _ros_api_thread(self):
-        while True:
-            self._ros_api.run()
-
     @property
     def map(self):
         return self._map
