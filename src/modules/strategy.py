@@ -4,6 +4,7 @@ from models.action import Action
 from models.coordinate import Coordinate
 from models.displacement import Displacement
 from modules.cherry_sequencer import CherrySequencer, SequencerCherryState
+from modules.dropout_cherry_sequencer import DropoutCherrySequencer, DropoutCherrySequencerState
 from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLATES, LEFT_MAP_CHERRIES, RIGHT_MAP_CHERRIES
 
 
@@ -42,6 +43,8 @@ class Strategy:
 
         # Sequencer
         self._cherry_sequencer = CherrySequencer(self._ros_api, self._map, self._current_position, '')
+        self._dropout_cherry_sequencer = DropoutCherrySequencer(self._ros_api, 
+            self._map, self._current_position, self._start_plate)
 
     @property
     def current_position(self):
@@ -72,7 +75,6 @@ class Strategy:
 
     def start(self):
         self._state = StrategyState.START
-        print('Set start')
         self._start()
 
     def run(self):
@@ -81,15 +83,18 @@ class Strategy:
         elif self._state == StrategyState.START:
             print('START')
             print(time.time() - self._chrono)
-            if self._is_start and (time.time() - self._chrono) > 0.5:
-                self._is_start = False
-                self._choose_next_cherry()
-                self._queue.append(self._cherry_sequencer.run())
-                self._go_to_destination()
+            if (time.time() - self._chrono) > 0.5:
+                # self._choose_next_cherry()
+                # self._queue.append(self._cherry_sequencer.run())
+                # self._go_to_destination()
+                print("Go here")
                 self._state = StrategyState.PICK_UP_CHERRIES
         elif self._state == StrategyState.PICK_UP_CHERRIES:
             # print('PICK_UP_CHERRIES')
-            if self._is_destination_reached:
+            if self._is_destination_reached or self._is_start:
+                print('pass here')
+                self._is_start = False
+
                 if not self._queue:
                     move = self._cherry_sequencer.run()
 
@@ -102,13 +107,46 @@ class Strategy:
                 self._go_to_destination()
 
         elif self._state == StrategyState.DROP_CHERRIES:
-            pass
+            if self._is_destination_reached or self._is_start:
+                self._is_start = False
+                move = self._dropout_cherry_sequencer.run()
+                print(move)
+
+                if not move and self._dropout_cherry_sequencer.state == DropoutCherrySequencerState.WAIT:
+                    print("End of sequence for dropout")
+                elif move:
+                    self._queue.append(move)
+
+                self._go_to_destination()
         elif self._state == StrategyState.GO_TO_PLATE:
             pass
         elif self._state == StrategyState.FINISH:
             pass
         else:
             self._state = StrategyState.WAIT
+
+    def manage_limit_switches(self, limit_switches):
+        if limit_switches.is_back_pressed():
+            print("--- BACK Pressed ---")
+            if self._state == StrategyState.PICK_UP_CHERRIES:
+                print("--- BACK Pressed While picking cherries ---")
+                print(f"self._cherry_sequencer.state {self._cherry_sequencer.state} {SequencerCherryState.GET_IN}")
+                if self._cherry_sequencer.state == SequencerCherryState.GET_IN:
+                    print("--- LIMIT SWITCH and GET_IN ---")
+                    time.sleep(0.2)
+                    if self._cherry_sequencer.cherry == 'down':
+                        self._current_position.y = 0
+                    else:
+                        self._current_position.y = self._map.length
+
+                    print(self._current_position)
+                    self._ros_api.flash_mcqueen.set_position(self._current_position)
+                    # self._ros_api.flash_mcqueen.set_stop()
+                    self._queue.append(self._cherry_sequencer.run())
+                    self._go_to_destination()
+
+            else:
+                self._ros_api.flash_mcqueen.set_stop()
 
     def _start(self):
         self.reset()
@@ -119,6 +157,7 @@ class Strategy:
 
         # Start cherry
         self._cherry_sequencer.reset()
+        self._dropout_cherry_sequencer.reset()
 
         # Create the cherry sequence
         if self._start_plate in LEFT_PLATES:

@@ -30,6 +30,21 @@ class RobotDisplacement:
         )
 
     @classmethod
+    def get_basket_plate_from_color(cls, color):
+        if color == 'blue':
+            return 'plate-1'
+        elif color == 'green':
+            return 'plate-10'
+        return None
+
+    @classmethod
+    def get_basket_plate(cls, map, plate):
+        if plate not in map.plates:
+            return None
+
+        return cls.get_basket_plate_from_color(map.plates[plate]['color'])
+
+    @classmethod
     def is_on_left(cls, game_map, position):
         return (game_map.width / 2) < position.x
 
@@ -128,10 +143,10 @@ class RobotDisplacement:
         return disp
 
     @classmethod
-    def get_displacement_to_map_item(cls, key, current_coordinate, map_item):
+    def get_displacement_to_map_item(cls, key, current_coordinate, map_item, backward=False):
         dest_coordinate = Coordinate(x=map_item['x_pos'], y=map_item['y_pos'], angle=0.0)
         
-        return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
+        return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate, backward)
     @classmethod
     def get_angle_to_coordinate(cls, current_coordinate, dest_coordinate):
         if current_coordinate == dest_coordinate:
@@ -276,3 +291,20 @@ class RobotDisplacement:
             )
 
         return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
+
+    @classmethod
+    def front_basket_plate(cls, map, current_coordinate, start_plate):
+        plates = map.plates
+
+        if start_plate not in plates:
+            return None
+        
+        dest_plate = cls.get_basket_plate(map, start_plate)
+        dist = cls.get_displacement_to_map_item( 
+                start_plate,
+                current_coordinate, plates[dest_plate],
+        )
+        dist.y -= plates[dest_plate]['y_size'] / 2
+        dist.angle_end = 0.0
+
+        return dist

@@ -4,13 +4,14 @@ import time
 
 from builders.map_builder import MapBuilder
 from models.coordinate import Coordinate
+from models.limit_switches import LimitSwitches
 from modules.robot_displacement import RobotDisplacement
 from modules.strategy import Strategy
 from ros_api.ros_api import RosApi
 from models.displacement import Displacement
 
 MAP_CONFIG_FILE = './configs/map.json'
-START_PLATE = 'plate-4'
+START_PLATE = 'plate-7'
 
 
 class BigBrain:
@@ -19,6 +20,7 @@ class BigBrain:
         self._current_position = self._load_current_position_from_plate(START_PLATE)
         self._ros_api = RosApi()
         self._strategy = Strategy(self._ros_api, self._map, self._current_position, START_PLATE)
+        self._limit_switches = LimitSwitches(0)
 
         # Set callbacks
         self._ros_api.flash_mcqueen.urgency_stop_callback = self._on_urgency_stop
@@ -113,6 +115,8 @@ class BigBrain:
 
     def _on_urgency_stop(self, data):
         print('urgency-stop: ', data)
+        self._limit_switches.value = data.data
+        self._strategy.manage_limit_switches(self._limit_switches)
         # self._ros_api.flash_mcqueen.set_stop()
 
 
