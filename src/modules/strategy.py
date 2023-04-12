@@ -4,10 +4,7 @@ from models.action import Action
 from models.coordinate import Coordinate
 from models.displacement import Displacement
 from modules.cherry_sequencer import CherrySequencer, SequencerCherryState
-<<<<<<< HEAD
 from modules.dropout_cherry_sequencer import DropoutCherrySequencer, DropoutCherrySequencerState
-=======
->>>>>>> 85d0a76267ebcadc450693cf5374ce48bbe06cc2
 from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLATES, LEFT_MAP_CHERRIES, RIGHT_MAP_CHERRIES
 
 
@@ -78,19 +75,12 @@ class Strategy:
 
     def start(self):
         self._state = StrategyState.START
-<<<<<<< HEAD
-=======
-        print('Set start')
->>>>>>> 85d0a76267ebcadc450693cf5374ce48bbe06cc2
         self._start()
 
     def run(self):
         if self._state == StrategyState.WAIT:
             pass
         elif self._state == StrategyState.START:
-            print('START')
-            print(time.time() - self._chrono)
-<<<<<<< HEAD
             if (time.time() - self._chrono) > 0.5:
                 # self._choose_next_cherry()
                 # self._queue.append(self._cherry_sequencer.run())
@@ -103,17 +93,6 @@ class Strategy:
                 print('pass here')
                 self._is_start = False
 
-=======
-            if self._is_start and (time.time() - self._chrono) > 0.5:
-                self._is_start = False
-                self._choose_next_cherry()
-                self._queue.append(self._cherry_sequencer.run())
-                self._go_to_destination()
-                self._state = StrategyState.PICK_UP_CHERRIES
-        elif self._state == StrategyState.PICK_UP_CHERRIES:
-            # print('PICK_UP_CHERRIES')
-            if self._is_destination_reached:
->>>>>>> 85d0a76267ebcadc450693cf5374ce48bbe06cc2
                 if not self._queue:
                     move = self._cherry_sequencer.run()
 
@@ -126,7 +105,6 @@ class Strategy:
                 self._go_to_destination()
 
         elif self._state == StrategyState.DROP_CHERRIES:
-<<<<<<< HEAD
             if self._is_destination_reached or self._is_start:
                 self._is_start = False
                 move = self._dropout_cherry_sequencer.run()
@@ -138,9 +116,6 @@ class Strategy:
                     self._queue.append(move)
 
                 self._go_to_destination()
-=======
-            pass
->>>>>>> 85d0a76267ebcadc450693cf5374ce48bbe06cc2
         elif self._state == StrategyState.GO_TO_PLATE:
             pass
         elif self._state == StrategyState.FINISH:
@@ -148,7 +123,6 @@ class Strategy:
         else:
             self._state = StrategyState.WAIT
 
-<<<<<<< HEAD
     def manage_limit_switches(self, limit_switches):
         if limit_switches.is_back_pressed():
             print("--- BACK Pressed ---")
@@ -172,8 +146,6 @@ class Strategy:
             else:
                 self._ros_api.flash_mcqueen.set_stop()
 
-=======
->>>>>>> 85d0a76267ebcadc450693cf5374ce48bbe06cc2
     def _start(self):
         self.reset()
 

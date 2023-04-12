@@ -2,6 +2,7 @@ import rospy
 
 from ros_api.flash_mcqueen_api import FlashMcQueenApi
 from ros_api.general_purpose_api import GeneralPurposeApi
+from ros_api.lidar_api import LidarApi
 
 NODE_NAME = "bigbrain"
 DEFAULT_RATE = 10
@@ -11,11 +12,13 @@ class RosApi:
     def __init__(self, rate=DEFAULT_RATE):
         self.flash_mcqueen = FlashMcQueenApi()
         self.general_purpose = GeneralPurposeApi()
+        self.lidar = LidarApi()
         self.rate = rate
 
     def start_node(self):
         self.flash_mcqueen.start()
         self.general_purpose.start()
+        self.lidar.start()
 
         # Init ROS node
         rospy.init_node(NODE_NAME)

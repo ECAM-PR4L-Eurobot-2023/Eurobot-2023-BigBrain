@@ -2,22 +2,26 @@
 
 import time
 
+import rospy
+
 from builders.map_builder import MapBuilder
 from models.coordinate import Coordinate
+from models.displacement import Displacement
+from models.lidar_bottom import LidarBottom
 from models.limit_switches import LimitSwitches
 from modules.robot_displacement import RobotDisplacement
 from modules.strategy import Strategy
 from ros_api.ros_api import RosApi
-from models.displacement import Displacement
 
 MAP_CONFIG_FILE = './configs/map.json'
-START_PLATE = 'plate-7'
+START_PLATE = 'plate-4'
 
 
 class BigBrain:
     def __init__(self):
         self._map = MapBuilder.from_file(MAP_CONFIG_FILE)
         self._current_position = self._load_current_position_from_plate(START_PLATE)
+        self._lidar_bottom = LidarBottom()
         self._ros_api = RosApi()
         self._strategy = Strategy(self._ros_api, self._map, self._current_position, START_PLATE)
         self._limit_switches = LimitSwitches(0)
@@ -26,19 +30,17 @@ class BigBrain:
         self._ros_api.flash_mcqueen.urgency_stop_callback = self._on_urgency_stop
         self._ros_api.flash_mcqueen.get_data_all_callback = self._on_get_data_all
         self._ros_api.flash_mcqueen.distance_reached_callback = self._on_distance_reached
+        self._ros_api.lidar._on_lidar_data = self._on_lidar_data
 
         self._ros_api.start_node()
         self.dest_reach = True
-        # self.dir = 'up'
-        # self._chrono = time.time()
-        # self._to_stop = True
-        # time.sleep(1)
 
     @property
     def map(self):
         return self._map
 
     def start(self):
+        self._ros_api.lidar.start_scan()
         self._strategy.start()
 
     def run(self):
@@ -85,7 +87,7 @@ class BigBrain:
                 #             Coordinate(x=0, y=0, angle=0.0,),
                 #             backward=True,
                 #         ))
-        while True:
+        while not rospy.is_shutdown():
             self._strategy.run()
 
     def _load_current_position_from_plate(self, start_plate):
@@ -118,6 +120,9 @@ class BigBrain:
         self._limit_switches.value = data.data
         self._strategy.manage_limit_switches(self._limit_switches)
         # self._ros_api.flash_mcqueen.set_stop()
+
+    def _on_lidar_data(self, data):
+        self._lidar_bottom.set_distances(data.data, data.precision)
 
 
 if __name__ == '__main__':

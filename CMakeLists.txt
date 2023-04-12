@@ -54,6 +54,7 @@ add_message_files(
   PidParameters.msg
   Position.msg
   Coordinate.msg
+  LidarData.msg
 )
 
 ## Generate services in the 'srv' folder

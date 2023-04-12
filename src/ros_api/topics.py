@@ -49,6 +49,20 @@ GENERAL_PURPOSE_FAN_ON = '{}/on'.format(GENERAL_PURPOSE_FAN_HEADER)
 GENERAL_PURPOSE_FAN_OFF = '{}/off'.format(GENERAL_PURPOSE_FAN_HEADER)
 
 #######################################################################
+#                               LiDAR
+#######################################################################
+# Batsignal header
+BATSIGNAL_HEADER = '/batsignal'
+BATSIGNAL_SCAN_HEADER = '{}/scan'.format(BATSIGNAL_HEADER)
+
+# Bat signal topics
+BATSIGNAL_START_SCAN = '{}/start'.format(BATSIGNAL_SCAN_HEADER)
+BATSIGNAL_STOP_SCAN = '{}/stop'.format(BATSIGNAL_SCAN_HEADER)
+BATSIGNAL_PRECISION_SET = '{}/precision/set'.format(BATSIGNAL_HEADER)
+BATSIGNAL_RATE_SET = '{}/rate/set'.format(BATSIGNAL_HEADER)
+BATSIGNAL_LIDAR_DATA = '{}/lidar/data'.format(BATSIGNAL_HEADER)
+
+#######################################################################
 #                              Topics
 #######################################################################
 TOPICS = {
@@ -74,4 +88,9 @@ TOPICS = {
     'fan-off': {'topic': GENERAL_PURPOSE_FAN_OFF, 'data-type': std_msgs.Empty},
     'set-max-speed': {'topic': TOPIC_SET_MAX_SPEED, 'data-type': std_msgs.Float32},
     'set-stop': {'topic': TOPIC_SET_STOP, 'data-type': std_msgs.Empty},
+    'start-scan': {'topic': BATSIGNAL_START_SCAN, 'data-type': std_msgs.Empty},
+    'stop-scan': {'topic': BATSIGNAL_STOP_SCAN, 'data-type': std_msgs.Empty},
+    'set-precision': {'topic': BATSIGNAL_PRECISION_SET, 'data-type': std_msgs.Float32},
+    'set-rate': {'topic': BATSIGNAL_RATE_SET, 'data-type': std_msgs.Float32},
+    'lidar-data': {'topic': BATSIGNAL_LIDAR_DATA, 'data-type': msg.LidarData},
 }
