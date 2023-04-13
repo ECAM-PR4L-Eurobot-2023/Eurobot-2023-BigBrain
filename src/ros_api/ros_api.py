@@ -24,7 +24,7 @@ class RosApi:
         rospy.init_node(NODE_NAME)
 
         # Set loop rate
-        # rate = rospy.Rate(25)
+        rate = rospy.Rate(1)
 
     def run(self):
         rospy.spin()

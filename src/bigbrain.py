@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import threading
 import time
 
 import rospy
@@ -9,19 +10,25 @@ from models.coordinate import Coordinate
 from models.displacement import Displacement
 from models.lidar_bottom import LidarBottom
 from models.limit_switches import LimitSwitches
+from modules.bat_signal import BatSignal
+from modules.emergency_stop import EmergencyStopDetector
 from modules.robot_displacement import RobotDisplacement
 from modules.strategy import Strategy
 from ros_api.ros_api import RosApi
+from driver.lidar_360 import Lidar360
+
 
 MAP_CONFIG_FILE = './configs/map.json'
-START_PLATE = 'plate-4'
-
+GS2_CONFIG_FILE = "./configs/gs2_config.json"
+START_PLATE = 'plate-7'
 
 class BigBrain:
     def __init__(self):
         self._map = MapBuilder.from_file(MAP_CONFIG_FILE)
         self._current_position = self._load_current_position_from_plate(START_PLATE)
         self._lidar_bottom = LidarBottom()
+        self._lidar = Lidar360(GS2_CONFIG_FILE)
+        self._bat_signal = BatSignal(self._lidar)
         self._ros_api = RosApi()
         self._strategy = Strategy(self._ros_api, self._map, self._current_position, START_PLATE)
         self._limit_switches = LimitSwitches(0)
@@ -33,7 +40,11 @@ class BigBrain:
         self._ros_api.lidar._on_lidar_data = self._on_lidar_data
 
         self._ros_api.start_node()
-        self.dest_reach = True
+
+        # Start LiDAR thread
+        self._lidar_thread = threading.Thread(target=self._bat_signal.run, daemon=True)
+        self._lidar_thread.start()
+        self._test = True
 
     @property
     def map(self):
@@ -42,6 +53,15 @@ class BigBrain:
     def start(self):
         self._ros_api.lidar.start_scan()
         self._strategy.start()
+        time.sleep(2.0)
+        print('yep')
+        self._ros_api.flash_mcqueen.set_displacement(Displacement(
+            angle_start=0.0,
+            angle_end=0.0,
+            x=0.0,
+            y=2000.0,
+            backward=False,
+        ))
 
     def run(self):
         # while True:
@@ -88,7 +108,13 @@ class BigBrain:
                 #             backward=True,
                 #         ))
         while not rospy.is_shutdown():
-            self._strategy.run()
+            if EmergencyStopDetector.detect_emergency_stop(self._lidar):
+                print('--- Obstacle ---')
+                print(self._lidar.distances)
+                # time.sleep(10.0)
+                self._ros_api.flash_mcqueen.set_stop()
+            
+            # self._strategy.run()
 
     def _load_current_position_from_plate(self, start_plate):
         start_plate_obj = self._map.plates[start_plate]

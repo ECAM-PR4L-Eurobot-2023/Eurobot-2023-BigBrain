@@ -5,6 +5,14 @@ class LidarBottom:
         self._is_new_read = False
 
     @property
+    def distances(self):
+        return tuple(self._distances)
+    
+    @property
+    def angle_precision(self):
+        return self._angle_precision
+
+    @property
     def is_new_read(self):
         if not self._is_new_read:
             return False

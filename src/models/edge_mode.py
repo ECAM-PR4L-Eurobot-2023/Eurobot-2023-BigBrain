@@ -1,0 +1,5 @@
+class EdgeMode:
+    STANDARD = 0x00
+    RECEPTABLE_FACING_UP = 0x01
+    RECEPTABLE_FACING_DOWN = 0x02
+    READING = 0xFF
