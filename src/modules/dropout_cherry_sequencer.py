@@ -45,6 +45,7 @@ class DropoutCherrySequencer:
             return Action(
                 key=self._start_plate,
                 start_coord=self.current_position,
+                end_coord=None,
                 displacement=RobotDisplacement.front_basket_plate(
                     self._map, 
                     self.current_position, 
@@ -58,13 +59,15 @@ class DropoutCherrySequencer:
             return Action(
                 key=self._start_plate,
                 start_coord=self.current_position,
+                end_coord=None,
                 displacement=self._go_to_wall_park()
             )
         elif self._state == DropoutCherrySequencerState.GO_TO_BASKET:
             print("DROPOUT GO_TO_BASKET")
-            # self._state = DropoutCherrySequencerState.OPEN_TANK
+            self._state = DropoutCherrySequencerState.OPEN_TANK
+            self._ros_api.general_purpose.open_cherry_door()
             # Make trembling the basket
-            pass
+            # pass
         elif self._state == DropoutCherrySequencerState.OPEN_TANK:
             print("DROPOUT OPEN_TANK")
             self._state = DropoutCherrySequencerState.TREMBLING
@@ -79,6 +82,7 @@ class DropoutCherrySequencer:
                 return Action(
                     key='center',
                     start_coord=self.current_position,
+                    end_coord=None,
                     displacement=RobotDisplacement.get_displacement_to_map_item(
                         '',
                         self.current_position,
@@ -95,7 +99,7 @@ class DropoutCherrySequencer:
     def _go_to_wall_park(self):
         dest_coordinate = Coordinate(
             x=self.current_position.x,
-            y=self._map.length - 50,
+            y=self._map.length,
             angle=0.0,
         )
 

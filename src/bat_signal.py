@@ -9,7 +9,7 @@ import rospy
 from driver.lidar_360 import Lidar360
 
 
-DEFAULT_LIDAR_DATA_RATE = 10  # Hz
+DEFAULT_LIDAR_DATA_RATE = 20  # Hz
 
 
 class BatSignal:

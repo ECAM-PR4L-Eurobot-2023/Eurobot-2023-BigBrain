@@ -24,8 +24,8 @@ class RobotDisplacement:
         angle_radians = math.radians(angle)
         
         return Coordinate(
-            x = -OFFSET_CENTER * math.sin(angle_radians),
-            y = -OFFSET_CENTER * math.cos(angle_radians),
+            x = OFFSET_CENTER * math.sin(angle_radians),
+            y = OFFSET_CENTER * math.cos(angle_radians),
             angle = 0.0,
         )
 
@@ -226,7 +226,7 @@ class RobotDisplacement:
         displacement = cls.get_displacement_to_coordinate(cherry_key, current_coordinate, dest_coordinate)
         displacement.angle_end = angle_end
 
-        return displacement
+        return dest_coordinate, displacement
 
     @classmethod
     def backtrace_cherry_pickup(cls, map, current_coordinate, key):
@@ -246,29 +246,29 @@ class RobotDisplacement:
                 angle=0.0
             )
 
-        return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate, True)
+        return dest_coordinate, cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate, True)
 
     @classmethod
     def forward_cherry_pickup(cls, map, current_coordinate, key):
         if key not in {'left', 'right'}:
             return None
 
-        if cls.is_on_top(map, current_coordinate):
-            print("YOURE ON TOP")
-            dest_coordinate = Coordinate(
-                x=current_coordinate.x,
-                y=map.cherries[key]['y_pos'] - map.cherries[key]['y_size'] / 2,
-                angle=0.0,
-            )
-        else:
-            print("YOURE ON DOWN")
-            dest_coordinate = Coordinate(
-                x=current_coordinate.x,
-                y=map.cherries[key]['y_pos'] + map.cherries[key]['y_size'] / 2,
-                angle=0.0,
-            )
+        # if cls.is_on_top(map, current_coordinate):
+        print("YOURE ON TOP")
+        dest_coordinate = Coordinate(
+            x=current_coordinate.x,
+            y=map.cherries[key]['y_pos'] - map.cherries[key]['y_size'] / 2 - 100.0,
+            angle=0.0,
+        )
+        # else:
+        #     print("YOURE ON DOWN")
+        #     dest_coordinate = Coordinate(
+        #         x=current_coordinate.x,
+        #         y=map.cherries[key]['y_pos'] + map.cherries[key]['y_size'] / 2,
+        #         angle=0.0,
+        #     )
 
-        return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
+        return dest_coordinate, cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
 
     @classmethod
     def getout_cherry(cls, map, current_coordinate, key):
@@ -290,7 +290,7 @@ class RobotDisplacement:
                 angle=0.0
             )
 
-        return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
+        return dest_coordinate, cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
 
     @classmethod
     def front_basket_plate(cls, map, current_coordinate, start_plate):

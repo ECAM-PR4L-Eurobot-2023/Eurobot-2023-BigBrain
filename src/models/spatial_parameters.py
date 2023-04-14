@@ -14,7 +14,7 @@ class SpatialParameters:
         self.angle = math.atan(self.x_offset / self.y_offset)
 
         if self.angle < 0:
-            self.angle += math.pi if self.y_offset < 0 else 2.0 * math.pi
+            self.angle += (math.pi if self.y_offset < 0 else 2.0 * math.pi)
         self.angle %= 2.0 * math.pi
 
         print(f"x: {self.x_offset}, y: {self.y_offset}, norm: {self.norm}, angle: {self.angle * 180 / math.pi}, angle_offset: {angle_offset}")

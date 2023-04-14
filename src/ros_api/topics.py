@@ -41,12 +41,16 @@ TOPIC_SET_STOP = "{}/stop".format(FLASH_MCQUEEN_TOPIC_HEADER)
 # General Purpose header
 GENERAL_PURPOSE_HEADER = '/robot'
 GENERAL_PURPOSE_FAN_HEADER = '{}/fan'.format(GENERAL_PURPOSE_HEADER)
+GENERAL_PURPOSE_CHERRY_DOOR_HEADER = '{}/door'.format(GENERAL_PURPOSE_HEADER)
 
 # General Purpose topics
 GENERAL_PURPOSE_SET_DISPLAY = '{}/display/set'.format(GENERAL_PURPOSE_HEADER)
 GENERAL_PURPOSE_START_PLATE = '{}/startPlate/set'.format(GENERAL_PURPOSE_HEADER)
 GENERAL_PURPOSE_FAN_ON = '{}/on'.format(GENERAL_PURPOSE_FAN_HEADER)
 GENERAL_PURPOSE_FAN_OFF = '{}/off'.format(GENERAL_PURPOSE_FAN_HEADER)
+GENERAL_PURPOSE_OPEN_CHERRY_DOOR = '{}/open'.format(GENERAL_PURPOSE_CHERRY_DOOR_HEADER)
+GENERAL_PURPOSE_CLOSE_CHERRY_DOOR = '{}/close'.format(GENERAL_PURPOSE_CHERRY_DOOR_HEADER)
+GENERAL_PURPOSE_DISGUISE= '{}/disguise'.format(GENERAL_PURPOSE_HEADER)
 
 #######################################################################
 #                               LiDAR
@@ -86,6 +90,9 @@ TOPICS = {
     'start-plate': {'topic': GENERAL_PURPOSE_START_PLATE, 'data-type': std_msgs.Int16},
     'fan-on': {'topic': GENERAL_PURPOSE_FAN_ON, 'data-type': std_msgs.Int16},
     'fan-off': {'topic': GENERAL_PURPOSE_FAN_OFF, 'data-type': std_msgs.Empty},
+    'open-cherry-door': {'topic': GENERAL_PURPOSE_OPEN_CHERRY_DOOR, 'data-type': std_msgs.Empty},
+    'close-cherry-door': {'topic': GENERAL_PURPOSE_CLOSE_CHERRY_DOOR, 'data-type': std_msgs.Empty},
+    'robot-disguise': {'topic': GENERAL_PURPOSE_DISGUISE, 'data-type': std_msgs.Empty},
     'set-max-speed': {'topic': TOPIC_SET_MAX_SPEED, 'data-type': std_msgs.Float32},
     'set-stop': {'topic': TOPIC_SET_STOP, 'data-type': std_msgs.Empty},
     'start-scan': {'topic': BATSIGNAL_START_SCAN, 'data-type': std_msgs.Empty},
