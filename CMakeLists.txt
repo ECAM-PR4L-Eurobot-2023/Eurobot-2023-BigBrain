@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  pybind11_catkin
   message_generation
 )
 
@@ -107,6 +108,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
+  CATKIN_DEPENDS pybind11_catkin
   CATKIN_DEPENDS message_runtime
 #  INCLUDE_DIRS include
 #  LIBRARIES eurobot2023
@@ -114,6 +116,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+pybind_add_module(wrapper MODULE src/bundle/wrapper.cpp)
 ###########
 ## Build ##
 ###########
@@ -208,3 +211,7 @@ catkin_install_python(PROGRAMS src/main.py src/bigbrain.py src/ros_api/ros_api.p
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+install(TARGETS wrapper
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
