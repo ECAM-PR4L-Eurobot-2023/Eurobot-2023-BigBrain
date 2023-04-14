@@ -5,6 +5,7 @@ import ros_api.ros_tools as tools
 class GeneralPurposeApi:
     def __init__(self):
         self.set_start_plate_callback = tools.default_callback
+        self.start_callback = tools.default_callback
 
     def start(self):
         self._define_publishers()
@@ -36,3 +37,4 @@ class GeneralPurposeApi:
     def _define_subscribers(self):
         self._set_start_plate_sub = tools.create_subscriber('start-plate', 
             self.set_start_plate_callback)
+        self._start_sub = tools.create_subscriber('robot-start', self.start_callback)

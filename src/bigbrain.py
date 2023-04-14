@@ -39,6 +39,8 @@ class BigBrain:
         self._ros_api.flash_mcqueen.urgency_stop_callback = self._on_urgency_stop
         self._ros_api.flash_mcqueen.get_data_all_callback = self._on_get_data_all
         self._ros_api.flash_mcqueen.distance_reached_callback = self._on_distance_reached
+        self._ros_api.general_purpose.set_start_plate_callback = self._on_start_plate
+        self._ros_api.general_purpose.start_callback = self._on_start
         self._ros_api.lidar._on_lidar_data = self._on_lidar_data
 
         self._ros_api.start_node()
@@ -54,7 +56,7 @@ class BigBrain:
 
     def start(self):
         self._ros_api.lidar.start_scan()
-        self._strategy.start()
+        # self._strategy.start()
 
     def run(self):
         # while True:
@@ -158,6 +160,19 @@ class BigBrain:
 
     def _on_lidar_data(self, data):
         self._lidar_bottom.set_distances(data.data, data.precision)
+
+    def _on_start(self, data):
+        print('--- START ---')
+        self._strategy.start()
+    
+    def _on_start_plate(self, data):
+        print(f'--- START PLATE: {data.data}')
+        plate = data.data + 1
+
+        if not 1 <= plate <= 10:
+            return
+
+        self._strategy.start_plate = f'plate-{plate}'
 
 
 if __name__ == '__main__':

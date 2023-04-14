@@ -42,7 +42,7 @@ class Strategy:
         self._current_destination = None
 
         # Store the start plate to adapt the strategy
-        self._start_plate = start_plate
+        self.start_plate = start_plate
 
         # Store the time from the start of the game
         self._chrono = time.time()
@@ -51,7 +51,7 @@ class Strategy:
         self._cherry_sequencer = CherrySequencer(self._ros_api, self._map, self._current_position, '')
         self._dummy_sequencer = DummySequencer(self._ros_api, self._map, self._current_position)
         self._dropout_cherry_sequencer = DropoutCherrySequencer(self._ros_api, 
-            self._map, self._current_position, self._start_plate)
+            self._map, self._current_position, self.start_plate)
 
         
         self._mem_obstacle = False
@@ -74,6 +74,10 @@ class Strategy:
         self._cherries_visited.clear()
         self._plates_visited.clear()
 
+        # Start cherry
+        self._cherry_sequencer.reset()
+        self._dropout_cherry_sequencer.reset()
+
         # Set the start position
         self._ros_api.flash_mcqueen.set_position(self._start_position)
         self._ros_api.flash_mcqueen.set_rotation(self._start_position.angle * math.pi / 180.0)
@@ -87,7 +91,7 @@ class Strategy:
 
     def start(self):
         self._state = StrategyState.START
-        self._start()
+        self._start_sequence()
 
     def run(self):
         self._is_obstacle = EmergencyStopDetector.detect_emergency_stop(self._lidar)
@@ -107,6 +111,7 @@ class Strategy:
         if self._state == StrategyState.WAIT:
             pass
         elif self._state == StrategyState.START:
+            print('--- START---')
             if (time.time() - self._chrono) > 0.5:
                 # self._choose_next_cherry()
                 # self._queue.append(self._cherry_sequencer.run())
@@ -185,19 +190,16 @@ class Strategy:
             else:
                 self._ros_api.flash_mcqueen.set_stop()
 
-    def _start(self):
+    def _start_sequence(self):
         self.reset()
 
         self._start = True
         # self._cross_sequence()
         # self._go_to_destination()
 
-        # Start cherry
-        self._cherry_sequencer.reset()
-        self._dropout_cherry_sequencer.reset()
         print("self._cherries_visited : ", self._cherries_visited)
         # Create the cherry sequence
-        if self._start_plate in LEFT_PLATES:
+        if self.start_plate in LEFT_PLATES:
             self._cherries_to_visit = ['left',]
         else:
             self._cherries_to_visit = ['right',]
@@ -288,14 +290,14 @@ class Strategy:
             self._ros_api.flash_mcqueen.set_displacement(self._current_destination.displacement)
 
     def _is_cherries_available_from_start(self):
-        on_side_cherry = LEFT_MAP_CHERRIES if (self._start_plate in LEFT_PLATES) \
+        on_side_cherry = LEFT_MAP_CHERRIES if (self.start_plate in LEFT_PLATES) \
             else RIGHT_MAP_CHERRIES
         
         return len([cherry for cherry in self.cherries if (cherry in on_side_cherry) and \
             (cherry not in self._cherries_visited)]) > 0
 
     def get_nearest_cherries_from_start(self):
-        on_side_cherry = LEFT_MAP_CHERRIES if (self._start_plate in LEFT_PLATES) \
+        on_side_cherry = LEFT_MAP_CHERRIES if (self.start_plate in LEFT_PLATES) \
             else RIGHT_MAP_CHERRIES
 
         return RobotDisplacement.get_nearest_cherries(self._map, self._current_position, 

@@ -51,6 +51,7 @@ GENERAL_PURPOSE_FAN_OFF = '{}/off'.format(GENERAL_PURPOSE_FAN_HEADER)
 GENERAL_PURPOSE_OPEN_CHERRY_DOOR = '{}/open'.format(GENERAL_PURPOSE_CHERRY_DOOR_HEADER)
 GENERAL_PURPOSE_CLOSE_CHERRY_DOOR = '{}/close'.format(GENERAL_PURPOSE_CHERRY_DOOR_HEADER)
 GENERAL_PURPOSE_DISGUISE= '{}/disguise'.format(GENERAL_PURPOSE_HEADER)
+GENERAL_PURPOSE_START = '{}/start'.format(GENERAL_PURPOSE_HEADER)
 
 #######################################################################
 #                               LiDAR
@@ -93,6 +94,7 @@ TOPICS = {
     'open-cherry-door': {'topic': GENERAL_PURPOSE_OPEN_CHERRY_DOOR, 'data-type': std_msgs.Empty},
     'close-cherry-door': {'topic': GENERAL_PURPOSE_CLOSE_CHERRY_DOOR, 'data-type': std_msgs.Empty},
     'robot-disguise': {'topic': GENERAL_PURPOSE_DISGUISE, 'data-type': std_msgs.Empty},
+    'robot-start': {'topic': GENERAL_PURPOSE_START, 'data-type': std_msgs.Empty},
     'set-max-speed': {'topic': TOPIC_SET_MAX_SPEED, 'data-type': std_msgs.Float32},
     'set-stop': {'topic': TOPIC_SET_STOP, 'data-type': std_msgs.Empty},
     'start-scan': {'topic': BATSIGNAL_START_SCAN, 'data-type': std_msgs.Empty},

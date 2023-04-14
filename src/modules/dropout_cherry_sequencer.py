@@ -7,7 +7,7 @@ from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLA
 
 
 NORMAL_SPEED = 255
-PARK_SPEED = 120
+PARK_SPEED = 200
 TREMBLING_TIME = 5  # Seconds
 
 
@@ -55,6 +55,7 @@ class DropoutCherrySequencer:
             print("DROPOUT GO_TO_PLATE")
             self._state = DropoutCherrySequencerState.GO_TO_BASKET
             self._set_park_speed()
+            self._ros_api.general_purpose.open_cherry_door()
             
             return Action(
                 key=self._start_plate,
@@ -65,7 +66,6 @@ class DropoutCherrySequencer:
         elif self._state == DropoutCherrySequencerState.GO_TO_BASKET:
             print("DROPOUT GO_TO_BASKET")
             self._state = DropoutCherrySequencerState.OPEN_TANK
-            self._ros_api.general_purpose.open_cherry_door()
             # Make trembling the basket
             # pass
         elif self._state == DropoutCherrySequencerState.OPEN_TANK:
