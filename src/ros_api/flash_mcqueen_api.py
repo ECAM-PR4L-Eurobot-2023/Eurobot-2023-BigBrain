@@ -37,6 +37,7 @@ class FlashMcQueenApi:
         self.get_data_all_callback = tools.default_callback
         self.urgency_stop_callback = tools.default_callback
         self.distance_reached_callback = tools.default_callback
+        self.wiggle_done_callback = tools.default_callback
 
     def start(self):
         self._define_publishers()
@@ -90,6 +91,9 @@ class FlashMcQueenApi:
     def set_stop(self):
         self._set_stop.publish()
 
+    def wiggle(self):
+        self._wiggle_pub.publish()
+
     def _define_publishers(self):
         self._set_displacement_pub = tools.create_publisher('set-displacement')
         self._set_position_pub = tools.create_publisher('set-position')
@@ -102,9 +106,11 @@ class FlashMcQueenApi:
         self._set_pid_angle_pub = tools.create_publisher('set-pid-angle')
         self._set_max_speed = tools.create_publisher('set-max-speed')
         self._set_stop = tools.create_publisher('set-stop')
+        self._wiggle_pub = tools.create_publisher('wiggle')
 
     def _define_subscribers(self):
         self._get_data_all_sub = tools.create_subscriber('get-data-all', self.get_data_all_callback)
         self._urgency_stop_sub = tools.create_subscriber('urgency-stop', self.urgency_stop_callback)
         self._distance_reached_sub = tools.create_subscriber('distance-reached', 
                                                             self.distance_reached_callback)
+        self._wiggle_done_sub = tools.create_subscriber('wiggle-done', self.wiggle_done_callback)

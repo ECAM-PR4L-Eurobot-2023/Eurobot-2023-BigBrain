@@ -104,29 +104,7 @@ class RobotDisplacement:
         delta_y = current_coordinate.y - dest_coordinate.y
         angle = cls.get_angle_to_coordinate(current_coordinate, dest_coordinate) % 360
 
-        # Set offset center
-        # delta_angle_radians = math.radians(angle - current_coordinate.angle)
-        # delta_x, delta_y = OFFSET_CENTER * math.sin(delta_angle_radians), OFFSET_CENTER * (1 - math.cos(delta_angle_radians))
-        # supposed_coordinate = Coordinate(
-        #     x=current_coordinate.x + delta_y * math.cos(current_coordinate.angle) - delta_x * math.sin(current_coordinate.angle),
-        #     y=current_coordinate.y - (delta_y * math.sin(current_coordinate.angle) + delta_x * math.cos(current_coordinate.angle)), 
-        #     angle=current_coordinate.angle)
-
-        # current_angle_radians = math.radians(current_coordinate.angle)
-        # delta_angle_radians = math.radians(angle - current_coordinate.angle)
-        # rotation_center_x, rotation_center_y = current_coordinate.x - OFFSET_CENTER * math.sin(current_angle_radians), current_coordinate.y - OFFSET_CENTER * math.cos(current_angle_radians)
-        # point_from_rotation_center_x, point_from_rotation_center_y = current_coordinate.x - rotation_center_x, current_coordinate.y - rotation_center_y
-        # rotated_point_x = point_from_rotation_center_x * math.cos(delta_angle_radians) - point_from_rotation_center_y * math.sin(delta_angle_radians)
-        # rotated_point_y = point_from_rotation_center_x * math.sin(delta_angle_radians) + point_from_rotation_center_y * math.cos(delta_angle_radians)
-        # supposed_coordinate = Coordinate(
-        #     x=rotated_point_x + rotation_center_x,
-        #     y=rotated_point_y + rotation_center_y,
-        #     angle=current_coordinate.angle)
-
         offset_center = cls.get_offset_center(angle)
-
-        print(f'angle: {angle}')
-        print(f'(angle + 180) % 360.0: {(angle + 180) % 360.0}')
 
         disp = Displacement(
             x=dest_coordinate.x + offset_center.x if not backward else dest_coordinate.x,
@@ -136,10 +114,6 @@ class RobotDisplacement:
             backward=backward,
         )
 
-        # print(key)
-        # print(str(disp))
-        # print('current coord: ', str(current_coordinate))
-        # print('dest_coordinate: ', str(dest_coordinate))
         return disp
 
     @classmethod
@@ -147,6 +121,21 @@ class RobotDisplacement:
         dest_coordinate = Coordinate(x=map_item['x_pos'], y=map_item['y_pos'], angle=0.0)
         
         return cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate, backward)
+
+
+    @classmethod
+    def is_object_at_left(cls, current_coordinate, dest_coordinate):
+        delta_x_dest = dest_coordinate.x - current_coordinate.x
+        delta_y_dest = dest_coordinate.y - current_coordinate.y
+        delta_x_proj = STEP_PROJECTION * math.sin(math.radians(current_coordinate.angle))
+        delta_y_proj = STEP_PROJECTION * math.cos(math.radians(current_coordinate.angle))
+
+        # Compute cross product
+        cross_product = delta_x_dest * delta_y_proj - delta_x_proj * delta_y_dest
+
+        # If the cross product is positive, then it is at left, otherwise it is at right
+        return cross_product < 0
+
     @classmethod
     def get_angle_to_coordinate(cls, current_coordinate, dest_coordinate):
         if current_coordinate == dest_coordinate:
@@ -210,9 +199,8 @@ class RobotDisplacement:
                 angle_end = 180.0
             else:
                 y = cherries[cherry_key]['y_pos'] + (cherries[cherry_key]['y_size'] / 2) + \
-                + Y_SIZE_ROBOT + 10.0
+                    + Y_SIZE_ROBOT + 10.0
                 angle_end = 0.0
-                print('here')
             
             # Compute x
             if cls.is_on_left(map, current_coordinate):
@@ -302,9 +290,34 @@ class RobotDisplacement:
         dest_plate = cls.get_basket_plate(map, start_plate)
         dist = cls.get_displacement_to_map_item( 
                 start_plate,
-                current_coordinate, plates[dest_plate],
+                current_coordinate, 
+                plates[dest_plate],
         )
         dist.y -= plates[dest_plate]['y_size'] / 2
         dist.angle_end = 0.0
+
+        return dist
+
+    @classmethod
+    def side_basket_plate(cls, map, current_coordinate, start_plate):
+        plates = map.plates
+
+        if start_plate not in plates:
+            return None
+        
+        dest_plate = cls.get_basket_plate(map, start_plate)
+        dist = cls.get_displacement_to_map_item( 
+                start_plate,
+                current_coordinate, 
+                plates[dest_plate],
+        )
+
+        if dest_plate == 'plate-1':
+            dist.x += plates[dest_plate]['x_size'] / 2
+            # dist.angle_end = 270.0
+        else:
+            dist.x -= plates[dest_plate]['x_size'] / 2
+            # dist.angle_end = 90.0
+        dist.y = plates[dest_plate]['y_size'] / 2
 
         return dist

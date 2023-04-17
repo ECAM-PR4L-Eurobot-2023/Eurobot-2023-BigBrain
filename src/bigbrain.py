@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import threading
 import time
 
@@ -103,20 +104,7 @@ class BigBrain:
                 #             backward=True,
                 #         ))
         while not rospy.is_shutdown():
-            # self._is_obstacle = EmergencyStopDetector.detect_emergency_stop(self._lidar)
-
-            # if self._is_obstacle and not self._mem_obstacle:
-            #     print('--- Obstacle ---')
-            #     print(self._lidar.distances)
-            #     # time.sleep(10.0)
-            #     self._ros_api.flash_mcqueen.set_stop()
-            # elif not self._is_obstacle and self._mem_obstacle:
-            #     self._strategy._recompute_destination()
-                # self._go_to_destination()
-
-
             self._strategy.run()
-            # self._mem_obstacle = self._is_obstacle
 
     def _load_current_position_from_plate(self, start_plate):
         start_plate_obj = self._map.plates[start_plate]
@@ -124,20 +112,26 @@ class BigBrain:
         if start_plate == 'plate-2':
             plate_coordinate = Coordinate(
                 x=40 + 160.0, 
-                y=int(start_plate_obj['y_pos']) - 160.0, 
+                y=start_plate_obj['y_pos'] - 110.0, 
+                angle=start_plate_obj['start_angle'],
+            )
+        elif start_plate == 'plate-9':
+            plate_coordinate = Coordinate(
+                x=self._map.width - 40 -  160.0, 
+                y=start_plate_obj['y_pos'] - 110.0, 
                 angle=start_plate_obj['start_angle'],
             )
         else:
             plate_coordinate = Coordinate(
-                x=int(start_plate_obj['x_pos']), 
-                y=int(start_plate_obj['y_pos']), 
+                x=start_plate_obj['x_pos'], 
+                y=start_plate_obj['y_pos'], 
                 angle=start_plate_obj['start_angle'])
 
         center_offset = RobotDisplacement.get_offset_center(plate_coordinate.angle)
         return Coordinate(
-            x=int(start_plate_obj['x_pos']) + center_offset.x,
-            y=int(start_plate_obj['y_pos']) + center_offset.y, 
-            angle=start_plate_obj['start_angle'])
+            x=plate_coordinate.x + center_offset.x,
+            y=plate_coordinate.y + center_offset.y, 
+            angle=plate_coordinate.angle)
 
     def _on_get_data_all(self, data):
         # print(f'--- Data all ---')
@@ -173,6 +167,9 @@ class BigBrain:
             return
 
         self._strategy.start_plate = f'plate-{plate}'
+        self._start_position = self._load_current_position_from_plate(self._strategy.start_plate)
+        self._ros_api.flash_mcqueen.set_position(self._start_position)
+        self._ros_api.flash_mcqueen.set_rotation(math.radians(self._start_position.angle))
 
 
 if __name__ == '__main__':

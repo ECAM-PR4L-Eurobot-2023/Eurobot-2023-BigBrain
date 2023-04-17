@@ -34,6 +34,8 @@ TOPIC_GET_PID_POSITION = "{}/position/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER
 TOPIC_GET_PID_ANGLE = "{}/angle/get".format(FLASH_MCQUEEN_PID_TOPIC_HEADER)
 TOPIC_SET_MAX_SPEED = "{}/max-speed/set".format(FLASH_MCQUEEN_TOPIC_HEADER)
 TOPIC_SET_STOP = "{}/stop".format(FLASH_MCQUEEN_TOPIC_HEADER)
+TOPIC_WIGGLE = "{}/wiggle".format(FLASH_MCQUEEN_TOPIC_HEADER)
+TOPIC_WIGGLE_DONE = "{}/wiggle/done".format(FLASH_MCQUEEN_TOPIC_HEADER)
 
 #######################################################################
 #                          General Purpose
@@ -87,6 +89,8 @@ TOPICS = {
     'get-pid-right-wheel': {'topic': TOPIC_GET_PID_RIGHT_WHEEL, 'data-type': msg.PidParameters},
     'get-pid-position': {'topic': TOPIC_GET_PID_POSITION, 'data-type': msg.PidParameters},
     'get-pid-angle': {'topic': TOPIC_GET_PID_ANGLE, 'data-type': msg.PidParameters},
+    'wiggle': {'topic': TOPIC_WIGGLE, 'data-type': std_msgs.Empty},
+    'wiggle-done': {'topic': TOPIC_WIGGLE_DONE, 'data-type': std_msgs.Empty},
     'set-display': {'topic': GENERAL_PURPOSE_SET_DISPLAY, 'data-type': std_msgs.Int16},
     'start-plate': {'topic': GENERAL_PURPOSE_START_PLATE, 'data-type': std_msgs.Int16},
     'fan-on': {'topic': GENERAL_PURPOSE_FAN_ON, 'data-type': std_msgs.Int16},

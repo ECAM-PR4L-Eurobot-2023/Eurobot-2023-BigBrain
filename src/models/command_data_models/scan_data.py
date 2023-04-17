@@ -46,7 +46,9 @@ class ScanData(CommandData, object):
         
         # Filter data to max distances
         filter_indices_min, filter_indices_max = distances < MIN_DISTANCE + spatial_param.norm, distances > MAX_DISTANCE + spatial_param.norm
-        distances[filter_indices_min], distances[filter_indices_max] = float('inf'), float('inf')
-        angles[filter_indices_min], angles[filter_indices_max] = float('inf'), float('inf')
+        # distances[filter_indices_min], distances[filter_indices_max] = float('inf'), float('inf')
+        # angles[filter_indices_min], angles[filter_indices_max] = float('inf'), float('inf')
+        distances[filter_indices_min] = float('inf')
+        angles[filter_indices_min] = float('inf')
 
         return ScanData(distances=distances, angles=angles)

@@ -42,7 +42,7 @@ class DummySequencer:
             )
         elif self._state == DummySequencerState.STRAIGHT_ON:
             self._state = DummySequencerState.TURN_90
-            dest_coordinate = Coordinate(x=1000.0, y=self.current_position, angle=0.0)
+            dest_coordinate = Coordinate(x=2000.0, y=self.current_position.y, angle=0.0)
 
             return Action(
                 key='dummy',

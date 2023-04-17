@@ -8,14 +8,16 @@
                 "y_size": 450,
                 "x_pos": 225,
                 "y_pos": 2775,
-                "color": "blue"
+                "color": "blue",
+                "start_angle": 180.0
             },
             "plate-2": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 225,
                 "y_pos": 1875,
-                "color": "green"
+                "color": "green",
+                "start_angle": 180.0
                 
             },
             "plate-3": {
@@ -23,56 +25,64 @@
                 "y_size": 450,
                 "x_pos": 225,
                 "y_pos": 1125,
-                "color": "blue"
+                "color": "blue",
+                "start_angle": 90.0
             },
             "plate-4": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 225,
                 "y_pos": 225,
-                "color": "green"
+                "color": "green",
+                "start_angle": 0.0
             },
             "plate-5": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 725,
                 "y_pos": 225,
-                "color": "blue"
+                "color": "blue",
+                "start_angle": 0.0
             },
             "plate-6": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1275,
                 "y_pos": 225,
-                "color": "green"
+                "color": "green",
+                "start_angle": 0.0
             },
             "plate-7": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
                 "y_pos": 225,
-                "color": "blue"
+                "color": "blue",
+                "start_angle": 0.0
             },
             "plate-8": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
                 "y_pos": 1125,
-                "color": "green"
+                "color": "green",
+                "start_angle": 270.0
             },
             "plate-9": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
                 "y_pos": 1875,
-                "color": "blue"
+                "color": "blue",
+                "start_angle": 180.0
             },
             "plate-10": {
                 "x_size": 450,
                 "y_size": 450,
                 "x_pos": 1775,
                 "y_pos": 2775,
-                "color": "green"
+                "color": "green",
+                "start_angle": 180.0
             }
         },
         "cherries": {
