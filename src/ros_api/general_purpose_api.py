@@ -26,6 +26,9 @@ class GeneralPurposeApi:
     def disguise(self):
         self._disguise_pub.publish()
 
+    def set_display(self, value):
+        self._set_display_pub.publish(value)
+
     def _define_publishers(self):
         self._set_display_pub = tools.create_publisher('set-display')
         self._set_fan_on_pub = tools.create_publisher('fan-on')

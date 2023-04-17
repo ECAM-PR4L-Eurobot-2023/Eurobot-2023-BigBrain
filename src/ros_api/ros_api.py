@@ -2,6 +2,7 @@ import rospy
 
 from ros_api.flash_mcqueen_api import FlashMcQueenApi
 from ros_api.general_purpose_api import GeneralPurposeApi
+from ros_api.kobe_api import KobeApi
 from ros_api.lidar_api import LidarApi
 
 NODE_NAME = "bigbrain"
@@ -12,12 +13,14 @@ class RosApi:
     def __init__(self, rate=DEFAULT_RATE):
         self.flash_mcqueen = FlashMcQueenApi()
         self.general_purpose = GeneralPurposeApi()
+        self.kobe = KobeApi()
         self.lidar = LidarApi()
         self.rate = rate
 
     def start_node(self):
         self.flash_mcqueen.start()
         self.general_purpose.start()
+        self.kobe.start()
         self.lidar.start()
 
         # Init ROS node

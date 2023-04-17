@@ -42,6 +42,7 @@ class BigBrain:
         self._ros_api.flash_mcqueen.distance_reached_callback = self._on_distance_reached
         self._ros_api.general_purpose.set_start_plate_callback = self._on_start_plate
         self._ros_api.general_purpose.start_callback = self._on_start
+        self._ros_api.kobe.get_cherry_callback = self._get_cherry
         self._ros_api.lidar._on_lidar_data = self._on_lidar_data
 
         self._ros_api.start_node()
@@ -57,6 +58,7 @@ class BigBrain:
 
     def start(self):
         self._ros_api.lidar.start_scan()
+        self._ros_api.kobe.request_cherry()
         # self._strategy.start()
 
     def run(self):
@@ -170,6 +172,11 @@ class BigBrain:
         self._start_position = self._load_current_position_from_plate(self._strategy.start_plate)
         self._ros_api.flash_mcqueen.set_position(self._start_position)
         self._ros_api.flash_mcqueen.set_rotation(math.radians(self._start_position.angle))
+
+    def _get_cherry(self, data):
+        print(f'--- Cherry received: {data.data}')
+        self._strategy.score_simulator.score_cherry = data.data
+        print(self._strategy.score_simulator.score_cherry)
 
 
 if __name__ == '__main__':

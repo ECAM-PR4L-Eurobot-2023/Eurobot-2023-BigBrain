@@ -56,6 +56,13 @@ GENERAL_PURPOSE_DISGUISE= '{}/disguise'.format(GENERAL_PURPOSE_HEADER)
 GENERAL_PURPOSE_START = '{}/start'.format(GENERAL_PURPOSE_HEADER)
 
 #######################################################################
+#                               Kobe
+#######################################################################
+KOBE_HEADER = 'kobe'
+KOBE_REQUEST_CHERRY = '{}/getCherry'.format(KOBE_HEADER)
+KOBE_GET_CHERRY = '{}/sendCherry'.format(KOBE_HEADER)
+
+#######################################################################
 #                               LiDAR
 #######################################################################
 # Batsignal header
@@ -106,4 +113,6 @@ TOPICS = {
     'set-precision': {'topic': BATSIGNAL_PRECISION_SET, 'data-type': std_msgs.Float32},
     'set-rate': {'topic': BATSIGNAL_RATE_SET, 'data-type': std_msgs.Float32},
     'lidar-data': {'topic': BATSIGNAL_LIDAR_DATA, 'data-type': msg.LidarData},
+    'request-cherry': {'topic': KOBE_REQUEST_CHERRY, 'data-type': std_msgs.Empty},
+    'get-cherry': {'topic': KOBE_GET_CHERRY, 'data-type': std_msgs.Int16},
 }

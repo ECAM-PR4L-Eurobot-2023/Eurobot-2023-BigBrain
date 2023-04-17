@@ -98,15 +98,9 @@ class DropoutCherrySequencer:
                     key='center',
                     start_coord=self.current_position,
                     end_coord=None,
-                    displacement=RobotDisplacement.get_displacement_to_map_item(
-                        '',
-                        self.current_position,
-                        self._map.plates[basket_plate],
-                        backward=True
-                    )
+                    displacement=self._go_to_center_end()
                 )
         elif self._state == DropoutCherrySequencerState.FINISH:
-            print("DROPOUT FINISH")
             return None
         else:
             self._state = DropoutCherrySequencerState.WAIT
@@ -134,6 +128,17 @@ class DropoutCherrySequencer:
         )
 
         return RobotDisplacement.get_displacement_to_coordinate('center', self.current_position, dest_coordinate)
+
+    def _go_to_center_end(self):
+        end_plate = RobotDisplacement.get_basket_plate(self._map, self.start_plate)
+        plate = self._map.plates[end_plate]
+        dest_coordinate = Coordinate(
+            x=self.current_position.x,
+            y=self.current_position.y - plate['y_size'] / 2,
+            angle=0.0,
+        )
+
+        return RobotDisplacement.get_displacement_to_coordinate('center', self.current_position, dest_coordinate, backward=True)
 
     def _set_normal_speed(self):
         self._ros_api.flash_mcqueen.set_max_speed(NORMAL_SPEED)

@@ -10,6 +10,12 @@ from modules.dropout_cherry_sequencer import DropoutCherrySequencer, DropoutCher
 from modules.emergency_stop import EmergencyStopDetector
 from modules.obstacle_avoider import ObstacleAvoider
 from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLATES, LEFT_MAP_CHERRIES, RIGHT_MAP_CHERRIES
+from modules.score_simulator import ScoreSimulator
+
+
+MATCH_TIME  = 100.0  # s
+DISGUISE_TIME = MATCH_TIME - 10.0  # s
+END_MATCH = MATCH_TIME - 5.0
 
 
 class StrategyState:
@@ -21,6 +27,7 @@ class StrategyState:
     FINISH = 5
     DUMMY = 6
     OBSTACLE_AVOID = 7
+    STOP_ROBOT = 8
 
 
 class Strategy:
@@ -33,6 +40,7 @@ class Strategy:
         self._state = StrategyState.WAIT
         self._mem_state = StrategyState.WAIT
         self._lidar = lidar
+        self.score_simulator = ScoreSimulator()
 
         # Memorize the actions done during the game
         self._cherries_to_visit = []
@@ -60,6 +68,8 @@ class Strategy:
         
         self._mem_obstacle = False
         self._is_obstacle = False
+        self._is_disguised = False
+        self._in_game = False
 
     @property
     def current_position(self):
@@ -79,10 +89,16 @@ class Strategy:
         self._current_position = current_position
         self._cherry_sequencer.current_position = current_position
 
+    # @property
+    # def score_simulator(self):
+    #     return self._score_simulator
+
     def reset(self):
         self._chrono = time.time()
         self._is_destination_reached = False
         self._is_start = True
+        self._is_disguised = False
+        self._in_game = True
         self.clear_queue()
         self._cherries_visited.clear()
         self._plates_visited.clear()
@@ -90,6 +106,7 @@ class Strategy:
         # Start cherry
         self._cherry_sequencer.reset()
         self._dropout_cherry_sequencer.reset()
+        self.score_simulator.reset()
 
         # Set the start position
         # self._ros_api.flash_mcqueen.set_position(self._start_position)
@@ -125,6 +142,15 @@ class Strategy:
         #     self._go_to_destination()
 
         self._mem_obstacle = self._is_obstacle
+
+        # Disguise after timeout
+        if self._in_game and not self._is_disguised and (time.time() - self._chrono) > DISGUISE_TIME:
+            self._is_disguised = True
+            self._ros_api.general_purpose.disguise()
+            self._ros_api.kobe.request_cherry()
+
+        if self._in_game and (time.time() - self._chrono) > END_MATCH:
+            self._state =  StrategyState.STOP_ROBOT
 
         if self._state == StrategyState.WAIT:
             pass
@@ -192,6 +218,12 @@ class Strategy:
                 else:
                     self._queue.append(move)
                 self._go_to_destination()
+        elif self._state == StrategyState.STOP_ROBOT:
+            self._state = StrategyState.FINISH
+            self._ros_api.flash_mcqueen.set_stop()
+            self._ros_api.general_purpose.set_display(self.score_simulator.score)
+            self._in_game = False
+            print('--- STOP ROBOT ---')
         else:
             self._state = StrategyState.WAIT
 
