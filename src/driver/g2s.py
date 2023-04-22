@@ -51,6 +51,7 @@ class G2S:
         self._ser.write(CommandBuilder.get_version_info())
     
     def get_device_parameters(self):
+        print('get dev param')
         self._ser.write(CommandBuilder.get_device_parameters())
     
     def start_scan(self):

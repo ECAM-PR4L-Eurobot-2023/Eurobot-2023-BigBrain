@@ -5,19 +5,19 @@
         "devices": [
             {
                 "address": 1,
-                "x_offset": 130.0,
-                "y_offset": 135.0,
-                "angle_offset": 0.0
-            },
-            {
-                "address": 2,
-                "x_offset": 0.0,
-                "y_offset": 135.0,
-                "angle_offset": 0.0
-            },
-            {
-                "address": 4,
                 "x_offset": -130.0,
+                "y_offset": 135.0,
+                "angle_offset": 0.0
+            }
+        ]
+    },
+    {
+        "port": "/dev/ttyUSB3",
+        "baudrate": 230400,
+        "devices": [
+            {
+                "address": 1,
+                "x_offset": 130.0,
                 "y_offset": 135.0,
                 "angle_offset": 0.0
             }

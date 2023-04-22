@@ -28,8 +28,8 @@ static void convert_distances_cpp(float *distance, float *angle, int calc_distan
         temp_theta = (device_param.b0 > 1 ? (device_param.k0 * n) - device_param.b0 : atan(device_param.k0 * n - device_param.b0) * 180 / M_PI);
         temp_dist = (calc_distance - ANGLE_P_X) / cos(((ANGLE_P_ANGLE + device_param.bias) - (temp_theta)) * M_PI / 180);
         temp_theta = temp_theta * M_PI / 180;
-        temp_x = cos(angle_p_bias) * temp_dist * cos(temp_theta) + sin(angle_p_bias) * (temp_dist * sin(temp_theta));
-        temp_y = -sin(angle_p_bias) * temp_dist * cos(temp_theta) + cos(angle_p_bias) * (temp_dist * sin(temp_theta));
+        temp_x = cos(angle_p_bias) * temp_dist * cos(temp_theta) + sin(angle_p_bias) * temp_dist * sin(temp_theta);
+        temp_y = -sin(angle_p_bias) * temp_dist * cos(temp_theta) + cos(angle_p_bias) * temp_dist * sin(temp_theta);
         temp_x += ANGLE_P_X;
         temp_y -= ANGLE_P_Y;
     }   
@@ -51,14 +51,12 @@ static void convert_distances_cpp(float *distance, float *angle, int calc_distan
     float total_x = cam_dist * sin(cam_angle) + spatial_param.norm * sin(spatial_param.angle);
     float total_y = cam_dist * cos(cam_angle) + spatial_param.norm * cos(spatial_param.angle);
 
-    (*distance) = round(sqrt((total_x * total_x) + (total_y * total_y)) * 100.0) / 100.0;
+    (*distance) = sqrt((total_x * total_x) + (total_y * total_y));
     (*angle) =  cam_angle + spatial_param.angle;
     (*angle) = fmod((*angle) + (2.0 * M_PI), 2.0 * M_PI);
 
     if ((*angle) < 0)
         (*angle) += 2.0 * M_PI;
-
-    (*angle) = round((*angle) * 100.0) / 100.0;
 }
 
 void convert_distance_iterator(py::array_t<float, py::array::c_style> &distances, py::array_t<float, py::array::c_style> &angles, py::array_t<int, py::array::c_style> &datas, SpatialParametersCpp spatial_param, DeviceParametersCpp device_param) {
@@ -70,7 +68,7 @@ void convert_distance_iterator(py::array_t<float, py::array::c_style> &distances
     for (int i = 2, j = 0; i < buf_datas.shape[0]; i += 2, j++) {
         int calc_distance = ((datas_ptr[i + 1] << 8) | (datas_ptr[i] & 0xFF)) & COMPUTE_DISTANCE_MASK;
 
-        convert_distances_cpp(distances_ptr + j, angles_ptr + j, calc_distance, i, spatial_param, device_param);
+        convert_distances_cpp(distances_ptr + j, angles_ptr + j, calc_distance, j, spatial_param, device_param);
     }
 }
 

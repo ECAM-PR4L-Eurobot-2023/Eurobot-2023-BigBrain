@@ -7,8 +7,8 @@ from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLA
 
 
 NORMAL_SPEED = 200
-PARK_SPEED = 120
-TREMBLING_TIME = 2.0  # Seconds
+PARK_SPEED = 150
+TREMBLING_TIME = 5.0  # Seconds
 
 
 class DropoutCherrySequencerState:
@@ -44,37 +44,49 @@ class DropoutCherrySequencer:
             print("DROPOUT WAIT")
             self._set_normal_speed()
             self._state = DropoutCherrySequencerState.GO_TO_CENTER
+            dest, disp = RobotDisplacement.side_basket_plate(
+                        self._map, 
+                        self.current_position, 
+                        self.start_plate
+                    )
 
-            return Action(
-                key=self.start_plate,
-                start_coord=self.current_position,
-                end_coord=None,
-                displacement=RobotDisplacement.side_basket_plate(
-                    self._map, 
-                    self.current_position, 
-                    self.start_plate
-                ))
+            if self.start_plate in {'plate-2', 'plate-9'}:
+                return Action(
+                    key=self.start_plate,
+                    start_coord=self.current_position,
+                    end_coord=dest,
+                    displacement=disp)
+            else:
+                dest, disp = self._go_to_aruco_tag()
+                return Action(
+                    key=self.start_plate,
+                    start_coord=self.current_position,
+                    end_coord=dest,
+                    displacement=disp,
+                )
         elif self._state == DropoutCherrySequencerState.GO_TO_CENTER:
             self._state = DropoutCherrySequencerState.GO_TO_PLATE
             basket_plate = RobotDisplacement.get_basket_plate(self._map, self.start_plate)
+            dest, disp = self._go_to_center()
             print("DROPOUT GO_TO_CENTER")
 
             return Action(
                     key='center',
                     start_coord=self.current_position,
-                    end_coord=None,
-                    displacement=self._go_to_center()
+                    end_coord=dest,
+                    displacement=disp
                 )
         elif self._state == DropoutCherrySequencerState.GO_TO_PLATE:
             print("DROPOUT GO_TO_PLATE")
             self._state = DropoutCherrySequencerState.GO_TO_BASKET
             self._set_park_speed()
+            dest, disp = self._go_to_wall_park()
             
             return Action(
                 key=self.start_plate,
                 start_coord=self.current_position,
-                end_coord=None,
-                displacement=self._go_to_wall_park()
+                end_coord=dest,
+                displacement=disp
             )
         elif self._state == DropoutCherrySequencerState.GO_TO_BASKET:
             print("DROPOUT GO_TO_BASKET")
@@ -93,12 +105,13 @@ class DropoutCherrySequencer:
                 self._state = DropoutCherrySequencerState.FINISH
                 basket_plate = RobotDisplacement.get_basket_plate(self._map, self.start_plate)
                 self._ros_api.general_purpose.close_cherry_door()
+                dest, disp = self._go_to_center_end()
 
                 return Action(
                     key='center',
                     start_coord=self.current_position,
-                    end_coord=None,
-                    displacement=self._go_to_center_end()
+                    end_coord=dest,
+                    displacement=disp
                 )
         elif self._state == DropoutCherrySequencerState.FINISH:
             return None
@@ -112,7 +125,7 @@ class DropoutCherrySequencer:
             angle=0.0,
         )
 
-        return RobotDisplacement.get_displacement_to_coordinate(
+        return dest_coordinate, RobotDisplacement.get_displacement_to_coordinate(
             'park',
             self.current_position, 
             dest_coordinate,
@@ -121,13 +134,21 @@ class DropoutCherrySequencer:
     def _go_to_center(self):
         end_plate = RobotDisplacement.get_basket_plate(self._map, self.start_plate)
         plate = self._map.plates[end_plate]
-        dest_coordinate = Coordinate(
-            x=plate['x_pos'],
-            y=plate['y_pos'] - plate['y_size'] / 4,
-            angle=0.0,
-        )
 
-        return RobotDisplacement.get_displacement_to_coordinate('center', self.current_position, dest_coordinate)
+        if self.start_plate in {'plate-2', 'plate-8'}: # RobotDisplacement.is_on_right(self._map, self.current_position):
+            dest_coordinate = Coordinate(
+                x=plate['x_pos'] - 50.0,
+                y=plate['y_pos'] - plate['y_size'] / 4,
+                angle=0.0,
+            )
+        else:
+            dest_coordinate = Coordinate(
+                x=plate['x_pos'] + 50.0,
+                y=plate['y_pos'] - plate['y_size'] / 4,
+                angle=0.0,
+            )
+
+        return dest_coordinate, RobotDisplacement.get_displacement_to_coordinate('center', self.current_position, dest_coordinate)
 
     def _go_to_center_end(self):
         end_plate = RobotDisplacement.get_basket_plate(self._map, self.start_plate)
@@ -138,7 +159,25 @@ class DropoutCherrySequencer:
             angle=0.0,
         )
 
-        return RobotDisplacement.get_displacement_to_coordinate('center', self.current_position, dest_coordinate, backward=True)
+        return dest_coordinate, RobotDisplacement.get_displacement_to_coordinate('center', self.current_position, dest_coordinate, backward=True)
+
+    def _go_to_aruco_tag(self):
+        if self.start_plate == 'plate-8':
+            aruco = self._map.aruco_tags['tag-21']
+            dest_coordinate = Coordinate(
+                x=aruco['x_pos'] - 100.0,
+                y=aruco['y_pos'],
+                angle=0.0,
+            )
+        else:
+            aruco = self._map.aruco_tags['tag-20']
+            dest_coordinate = Coordinate(
+                x=aruco['x_pos'] + 100.0,
+                y=aruco['y_pos'],
+                angle=0.0,
+            )
+
+        return dest_coordinate, RobotDisplacement.get_displacement_to_coordinate('aruco', self.current_position, dest_coordinate, backward=False)
 
     def _set_normal_speed(self):
         self._ros_api.flash_mcqueen.set_max_speed(NORMAL_SPEED)

@@ -29,6 +29,9 @@ class GeneralPurposeApi:
     def set_display(self, value):
         self._set_display_pub.publish(value)
 
+    def end(self):
+        self._end_pub.publish()
+
     def _define_publishers(self):
         self._set_display_pub = tools.create_publisher('set-display')
         self._set_fan_on_pub = tools.create_publisher('fan-on')
@@ -36,6 +39,7 @@ class GeneralPurposeApi:
         self._open_cherry_door_pub = tools.create_publisher('open-cherry-door')
         self._close_cherry_door_pub = tools.create_publisher('close-cherry-door')
         self._disguise_pub = tools.create_publisher('robot-disguise')
+        self._end_pub = tools.create_publisher('end')
 
     def _define_subscribers(self):
         self._set_start_plate_sub = tools.create_subscriber('start-plate', 

@@ -5,12 +5,12 @@ import numpy as np
 from modules.robot_displacement import X_SIZE_ROBOT, Y_SIZE_ROBOT
 
 
-DISTANCE_EMERGENCY = 150.0  # mm
+DISTANCE_EMERGENCY = 250.0  # mm
 CENTER_TO_EDGE = 115
 TOTAL_DISTANCE_EMERGENCY = CENTER_TO_EDGE + DISTANCE_EMERGENCY
 TOTAL_DISTANCE_EMERGENCY_TEST = math.sqrt((X_SIZE_ROBOT / 2)**2 + (Y_SIZE_ROBOT / 2)**2)
 X_MAX_DIST = 150 #  X_SIZE_ROBOT / 2  # + 10.0
-FORWARD_ANGLE = 47
+FORWARD_ANGLE = 60
 MAX_COUNTER = 5
 MAX_WINDOW_VALID = 2
 WINDOW = 20
@@ -48,15 +48,16 @@ class EmergencyStopDetector:
 
                 # Check if it is potentially a wall
                 if game_map.is_wall(proj_x, proj_y):
-                    print('--- WALL ---')
-                    print(round(dist, 2), round(proj_x, 2), round(proj_y, 2), round(angle, 2), round(current_position.angle, 2), round((current_position.angle + angle) % 360.0, 2))
+                    # print('--- WALL ---')
+                    # print(round(dist, 2), round(proj_x, 2), round(proj_y, 2), round(angle, 2), round(current_position.angle, 2), round((current_position.angle + angle) % 360.0, 2))
+                    continue
                 
                 # if game_map.is_cherry(proj_x, proj_y):
                 #     print('--- CHERRY ---')
+                #     print(round(dist, 2), round(proj_x, 2), round(proj_y, 2), round(angle, 2), round(current_position.angle, 2), round((current_position.angle + angle) % 360.0, 2))
+                #     continue
 
-                if dist < TOTAL_DISTANCE_EMERGENCY / math.cos(angle_radians) and \
-                    -X_MAX_DIST < dist * math.sin(angle_radians) < X_MAX_DIST:
-                    # print(x_dist)
+                if dist < TOTAL_DISTANCE_EMERGENCY / math.cos(angle_radians):
                     counter += 1
 
             if counter >= MAX_COUNTER:

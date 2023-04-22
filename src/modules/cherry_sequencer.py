@@ -90,13 +90,6 @@ class CherrySequencer:
             self._set_normal_speed()
 
             return None
-            # return Action(
-            #         key=self.cherry,
-            #         start_coord=self.current_position,
-            #         displacement=RobotDisplacement.get_displacement_to_coordinate(
-            #             self.cherry, self.current_position, self.current_position, 
-            #         )
-            #     )
         elif self._state == SequencerCherryState.GET_IN:
             print("CHERRY GET_IN")
             self._ros_api.general_purpose.turn_on_fan(self._get_fan_to_turn_on())

@@ -18,4 +18,4 @@ class MapBuilder:
                         length=map_data.get('length', 0.0),
                         plates=map_data.get('plates', {}), 
                         cherries=map_data.get('cherries', {}), 
-                        aruco_tags=map_data.get('aruco_tags', {}))
+                        aruco_tags=map_data.get('atuco-tag', {}))

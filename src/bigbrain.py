@@ -27,7 +27,7 @@ START_PLATE = 'plate-2'
 class BigBrain:
     def __init__(self):
         self._map = MapBuilder.from_file(MAP_CONFIG_FILE)
-        self._start_position = self._load_current_position_from_plate(START_PLATE)
+        self._start_position = Coordinate(x=0.0, y=0.0, angle=0.0)
         self._current_position = Coordinate(x=0.0, y=0.0, angle=0.0)
         self._lidar_bottom = LidarBottom()
         self._lidar = Lidar360(GS2_CONFIG_FILE)
@@ -113,13 +113,13 @@ class BigBrain:
 
         if start_plate == 'plate-2':
             plate_coordinate = Coordinate(
-                x=40 + 160.0, 
+                x=50 + 160.0, 
                 y=start_plate_obj['y_pos'] - 110.0, 
                 angle=start_plate_obj['start_angle'],
             )
         elif start_plate == 'plate-9':
             plate_coordinate = Coordinate(
-                x=self._map.width - 40 -  160.0, 
+                x=self._map.width - 50 -  160.0, 
                 y=start_plate_obj['y_pos'] - 110.0, 
                 angle=start_plate_obj['start_angle'],
             )

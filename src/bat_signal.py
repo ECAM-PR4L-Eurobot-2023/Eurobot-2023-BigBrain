@@ -29,6 +29,8 @@ class BatSignal:
                     self._lidar.compute_distances()
 
                 self._lidar.run()
+
+            self._lidar.stop_scan()
         except KeyboardInterrupt:
             exit()
 

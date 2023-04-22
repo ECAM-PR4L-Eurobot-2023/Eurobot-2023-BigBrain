@@ -9,6 +9,8 @@ from driver.g2s import G2S
 DEFAULT_ANGLE_PRECISION = 0.5  # Precision of the angle in degree
 MINIMUM_ANGLE_PRECISION = 0.1
 MAXIMUM_ANGLE_PRECISION = 2.0
+SWITCH_TIMEOUT = 1.0 # s
+
 
 class Lidar360:
     def __init__(self, config_file, angle_precision=DEFAULT_ANGLE_PRECISION):
@@ -16,6 +18,8 @@ class Lidar360:
         self._angle_precision = angle_precision
         self._distances = np.full(round(360.0 / self._angle_precision), [float('inf')])
         self._compute_distances_vectorized = np.vectorize(self._compute_distances_vector)
+        self._chrono = time.time()
+        self._lidar_index = 0
 
         # Setup the LiDAR
         self._setup()
@@ -37,9 +41,27 @@ class Lidar360:
         return np.copy(self._distances)
 
     def run(self):
+        # if len(self._gs2_list) > 1:
+        #     old_index = self._lidar_index
+
+        #     if (time.time() - self._chrono) > SWITCH_TIMEOUT:
+        #         self._chrono = time.time()
+        #         self._lidar_index += 1
+
+        #         if self._lidar_index >= len(self._gs2_list):
+        #             self._lidar_index = 0
+            
+        #     self._gs2_list[old_index].stop_scan()
+        #     time.sleep(0.020)
+        #     self._gs2_list[self._lidar_index].start_scan()
+            
         [gs2.run() for gs2 in self._gs2_list]
 
     def start_scan(self):
+        # if len(self._gs2_list) > 1:
+        #     self._lidar_index = 0
+        #     self._gs2_list[self._lidar_index].start_scan()
+        # else:
         for gs2 in self._gs2_list:
             gs2.start_scan()
 
@@ -53,21 +75,29 @@ class Lidar360:
 
         # Compute distances for each LiDAR
         for gs2 in self._gs2_list:
-            for scan_data in gs2.scan_data:
-                self._compute_scan_data(scan_data)
-
-    def _compute_scan_data(self, scan_data):
+            for i, scan_data in enumerate([gs2.scan_data[0], gs2.scan_data[1]]):
+                self._compute_scan_data(i, scan_data)
+                # self._compute_scan_data(scan_data)
+            # if gs2.scan_data[1] and all(np.isinf(gs2.scan_data[1].angles)):
+            #     print(f'gs2.scan_data[1], angle: ')
+        # print(self._distances)
+    def _compute_scan_data(self, i, scan_data):
         # If not data available, return
         if scan_data is None:
             return
-        # print('dist: ', scan_data.distances)
-        # print('angle: ', scan_data.angles)
-        self._compute_distances_vectorized(scan_data.distances, scan_data.angles)
+        
+        self._compute_distances_vectorized(i, scan_data.distances, scan_data.angles)
 
-    def _compute_distances_vector(self, distance, angle):
+    def _compute_distances_vector(self, index, distance, angle):
         # If the angle has an infinite value, return
         if math.isinf(angle):
             return
+
+        if index == 0:
+            angle *= -1
+
+        if angle < 0:
+            angle += 2 * math.pi
 
         angle_degree = angle * 180.0 / math.pi
         angle_modulo = angle_degree % self._angle_precision
@@ -88,6 +118,7 @@ class Lidar360:
         for gs2 in self._gs2_list:
             # self._gs2.set_baudrate(0)
             # time.sleep(0.3)
+            print('---- SETUP ---')
             gs2.system_reset()
             time.sleep(0.5)
             gs2.get_device_address()

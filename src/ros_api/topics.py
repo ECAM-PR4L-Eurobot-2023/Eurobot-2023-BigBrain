@@ -7,6 +7,8 @@ import eurobot2023.msg as msg
 
 DEFAULT_QUEUE_SIZE = 10
 
+TOPIC_KILL_END = '/end'
+
 #######################################################################
 #                           Flash McQueen
 #######################################################################
@@ -115,4 +117,5 @@ TOPICS = {
     'lidar-data': {'topic': BATSIGNAL_LIDAR_DATA, 'data-type': msg.LidarData},
     'request-cherry': {'topic': KOBE_REQUEST_CHERRY, 'data-type': std_msgs.Empty},
     'get-cherry': {'topic': KOBE_GET_CHERRY, 'data-type': std_msgs.Int16},
+    'end': {'topic': TOPIC_KILL_END, 'data-type': std_msgs.Empty},
 }

@@ -28,6 +28,7 @@ class StrategyState:
     DUMMY = 6
     OBSTACLE_AVOID = 7
     STOP_ROBOT = 8
+    DISGUISE = 9
 
 
 class Strategy:
@@ -124,30 +125,30 @@ class Strategy:
         self._start_sequence()
 
     def run(self):
-        # self._is_obstacle = EmergencyStopDetector.detect_emergency_stop(
-        #     self._lidar, self._current_position, self._map)
+        self._is_obstacle = EmergencyStopDetector.detect_emergency_stop(
+            self._lidar, self._current_position, self._map)
 
-        # if self._is_obstacle and not self._mem_obstacle:
-        #     print('--- Obstacle ---')
-            # time.sleep(10.0)
-            # print(self._lidar.distances)
-            # self._ros_api.flash_mcqueen.set_stop()
-            # self._mem_state = self._state
+        if self._is_obstacle and not self._mem_obstacle:
+            print('--- Obstacle ---')
+            print(self._lidar.distances)
+            self._ros_api.flash_mcqueen.set_stop()
+            self._mem_state = self._state
             # self._state = StrategyState.OBSTACLE_AVOID
             # self._obstacle_avoider.reset()
             # self._obstacle_avoider.destination = self._current_destination
-        # elif not self._is_obstacle and self._mem_obstacle:
-        #     print('recompute val')
-        #     self._recompute_destination()
-        #     self._go_to_destination()
+        elif not self._is_obstacle and self._mem_obstacle:
+            print('recompute val')
+            self._recompute_destination()
+            self._go_to_destination()
 
         self._mem_obstacle = self._is_obstacle
 
         # Disguise after timeout
         if self._in_game and not self._is_disguised and (time.time() - self._chrono) > DISGUISE_TIME:
             self._is_disguised = True
+            self._state = StrategyState.DISGUISE
             self._ros_api.general_purpose.disguise()
-            self._ros_api.kobe.request_cherry()
+            self._ros_api.flash_mcqueen.set_stop()
 
         if self._in_game and (time.time() - self._chrono) > END_MATCH:
             self._state =  StrategyState.STOP_ROBOT
@@ -163,6 +164,7 @@ class Strategy:
                 print("Go here")
                 # pass
                 self._state = StrategyState.PICK_UP_CHERRIES
+                # self._state = StrategyState.DUMMY
         elif self._state == StrategyState.PICK_UP_CHERRIES:
             # print('PICK_UP_CHERRIES')
             if self._is_destination_reached or self._is_start:
@@ -220,10 +222,14 @@ class Strategy:
                 self._go_to_destination()
         elif self._state == StrategyState.STOP_ROBOT:
             self._state = StrategyState.FINISH
-            self._ros_api.flash_mcqueen.set_stop()
-            self._ros_api.general_purpose.set_display(self.score_simulator.score)
+            # self._ros_api.flash_mcqueen.set_stop()
+            self._ros_api.general_purpose.end()
+            # self._ros_api.general_purpose.set_display(self.score_simulator.score)
             self._in_game = False
             print('--- STOP ROBOT ---')
+        elif self._state == StrategyState.DISGUISE:
+            print('--- DISGUISE ---')
+            pass
         else:
             self._state = StrategyState.WAIT
 

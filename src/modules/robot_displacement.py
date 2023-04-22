@@ -46,10 +46,10 @@ class RobotDisplacement:
 
     @classmethod
     def is_on_left(cls, game_map, position):
-        return (game_map.width / 2) < position.x
+        return (game_map.width / 2) > position.x
 
     @classmethod
-    def is_on_write(cls, game_map, position):
+    def is_on_right(cls, game_map, position):
         return not cls.is_on_left(game_map, position)
 
     @classmethod
@@ -241,20 +241,20 @@ class RobotDisplacement:
         if key not in {'left', 'right'}:
             return None
 
-        # if cls.is_on_top(map, current_coordinate):
-        print("YOURE ON TOP")
-        dest_coordinate = Coordinate(
-            x=current_coordinate.x,
-            y=map.cherries[key]['y_pos'] - map.cherries[key]['y_size'] / 2 - 100.0,
-            angle=0.0,
-        )
-        # else:
-        #     print("YOURE ON DOWN")
-        #     dest_coordinate = Coordinate(
-        #         x=current_coordinate.x,
-        #         y=map.cherries[key]['y_pos'] + map.cherries[key]['y_size'] / 2,
-        #         angle=0.0,
-        #     )
+        if cls.is_on_top(map, current_coordinate):
+            print("YOURE ON TOP")
+            dest_coordinate = Coordinate(
+                x=current_coordinate.x,
+                y=map.cherries[key]['y_pos'] - map.cherries[key]['y_size'] / 2 - 300.0,
+                angle=0.0,
+            )
+        else:
+            print("YOURE ON DOWN")
+            dest_coordinate = Coordinate(
+                x=current_coordinate.x,
+                y=map.cherries[key]['y_pos'] + map.cherries[key]['y_size'] / 2 + 100.0,
+                angle=0.0,
+            )
 
         return dest_coordinate, cls.get_displacement_to_coordinate(key, current_coordinate, dest_coordinate)
 
@@ -320,4 +320,4 @@ class RobotDisplacement:
             # dist.angle_end = 90.0
         dist.y = plates[dest_plate]['y_size'] / 2
 
-        return dist
+        return Coordinate(x=dist.x, y=dist.y, angle=0.0), dist
