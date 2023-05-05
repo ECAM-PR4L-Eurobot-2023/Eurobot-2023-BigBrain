@@ -5,8 +5,8 @@ from models.coordinate import Coordinate
 from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLATES
 
 
-BACKWARD_PROJECTION_DISTANCE = 200.0  # mm
-BACKWARD_PROJECTION_ANGLE = math.radians(45)  # degree
+BACKWARD_PROJECTION_DISTANCE = 150.0  # mm
+BACKWARD_PROJECTION_ANGLE = math.radians(55)  # degree
 NORMAL_SPEED = 255
 REDUCED_SPEED = 80
 BACKWARD_SPEED = 120
@@ -88,6 +88,12 @@ class CherrySequencer:
             self._state = SequencerCherryState.WAIT
             self._ros_api.general_purpose.turn_off_fan()
             self._set_normal_speed()
+            disp = RobotDisplacement.get_displacement_to_map_item( 
+                'plate-4',
+                self.current_position, 
+                self._map.plates['plate-4'],
+                backward=True
+            )
 
             return None
         elif self._state == SequencerCherryState.GET_IN:

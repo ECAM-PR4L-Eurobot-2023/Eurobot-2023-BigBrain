@@ -24,7 +24,8 @@ class GeneralPurposeApi:
         self._close_cherry_door_pub.publish()
 
     def disguise(self):
-        self._disguise_pub.publish()
+        # self._disguise_pub.publish()
+        pass
 
     def set_display(self, value):
         self._set_display_pub.publish(value)

@@ -14,7 +14,7 @@ from modules.score_simulator import ScoreSimulator
 
 
 MATCH_TIME  = 100.0  # s
-DISGUISE_TIME = MATCH_TIME - 10.0  # s
+DISGUISE_TIME = MATCH_TIME - 15.0  # s
 END_MATCH = MATCH_TIME - 5.0
 
 
@@ -128,7 +128,7 @@ class Strategy:
         self._is_obstacle = EmergencyStopDetector.detect_emergency_stop(
             self._lidar, self._current_position, self._map)
 
-        if self._is_obstacle and not self._mem_obstacle:
+        if not self._disable_lidar() and self._is_obstacle and not self._mem_obstacle:
             print('--- Obstacle ---')
             print(self._lidar.distances)
             self._ros_api.flash_mcqueen.set_stop()
@@ -136,7 +136,7 @@ class Strategy:
             # self._state = StrategyState.OBSTACLE_AVOID
             # self._obstacle_avoider.reset()
             # self._obstacle_avoider.destination = self._current_destination
-        elif not self._is_obstacle and self._mem_obstacle:
+        elif not self._is_obstacle and self._mem_obstacle and not self._is_disguised:
             print('recompute val')
             self._recompute_destination()
             self._go_to_destination()
@@ -146,6 +146,7 @@ class Strategy:
         # Disguise after timeout
         if self._in_game and not self._is_disguised and (time.time() - self._chrono) > DISGUISE_TIME:
             self._is_disguised = True
+            print('--- DISGUISE ---')
             self._state = StrategyState.DISGUISE
             self._ros_api.general_purpose.disguise()
             self._ros_api.flash_mcqueen.set_stop()
@@ -168,7 +169,6 @@ class Strategy:
         elif self._state == StrategyState.PICK_UP_CHERRIES:
             # print('PICK_UP_CHERRIES')
             if self._is_destination_reached or self._is_start:
-                print('pass here')
                 self._is_start = False
 
                 if not self._queue:
@@ -379,3 +379,18 @@ class Strategy:
 
     def _is_cherries_available(self):
         return len(self._cherries_visited)
+
+    def _disable_lidar(self):
+        if 1450 < self._current_position.x < 2550 and 2450 < self._current_position.y < 3550:
+            return True
+
+        if -550 < self._current_position.x < 550 and 2450 < self._current_position.y < 3550:
+            return True
+
+        return False
+        # return self._dropout_cherry_sequencer.state == DropoutCherrySequencerState.GO_TO_CENTER or
+        #     self._dropout_cherry_sequencer.state == DropoutCherrySequencerState.GO_TO_CENTER or \
+        #     self._dropout_cherry_sequencer.state == DropoutCherrySequencerState.GO_TO_BASKET or \
+        #     self._dropout_cherry_sequencer.state == DropoutCherrySequencerState.OPEN_TANK or \
+        #     self._dropout_cherry_sequencer.state == DropoutCherrySequencerState.TREMBLING or \
+        #     self._dropout_cherry_sequencer.state == DropoutCherrySequencerState.BACKWARD

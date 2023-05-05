@@ -9,6 +9,7 @@ from modules.robot_displacement import RobotDisplacement, LEFT_PLATES, RIGHT_PLA
 NORMAL_SPEED = 200
 PARK_SPEED = 150
 TREMBLING_TIME = 5.0  # Seconds
+MAX_BACK_COUNTER = 1
 
 
 class DropoutCherrySequencerState:
@@ -19,12 +20,14 @@ class DropoutCherrySequencerState:
     TREMBLING = 4
     FINISH = 5
     GO_TO_CENTER = 6
+    BACKWARD = 7
 
 class DropoutCherrySequencer:
     def __init__(self, ros_api, map, current_position, start_plate):
         self._ros_api = ros_api
         self._map = map
         self._state = DropoutCherrySequencerState.WAIT
+        self._counter = 0
         self.current_position = current_position
         self.start_plate = start_plate
         self.run_next_state = False
@@ -78,16 +81,20 @@ class DropoutCherrySequencer:
                 )
         elif self._state == DropoutCherrySequencerState.GO_TO_PLATE:
             print("DROPOUT GO_TO_PLATE")
-            self._state = DropoutCherrySequencerState.GO_TO_BASKET
-            self._set_park_speed()
-            dest, disp = self._go_to_wall_park()
-            
-            return Action(
-                key=self.start_plate,
-                start_coord=self.current_position,
-                end_coord=dest,
-                displacement=disp
-            )
+            if self._counter <= MAX_BACK_COUNTER:
+                self._state = DropoutCherrySequencerState.GO_TO_BASKET
+                self._set_park_speed()
+                dest, disp = self._go_to_wall_park()
+                
+                return Action(
+                    key=self.start_plate,
+                    start_coord=self.current_position,
+                    end_coord=dest,
+                    displacement=disp
+                )
+            else:
+                self._state = DropoutCherrySequencerState.FINISH
+                return None
         elif self._state == DropoutCherrySequencerState.GO_TO_BASKET:
             print("DROPOUT GO_TO_BASKET")
             self._ros_api.general_purpose.open_cherry_door()
@@ -106,6 +113,8 @@ class DropoutCherrySequencer:
                 basket_plate = RobotDisplacement.get_basket_plate(self._map, self.start_plate)
                 self._ros_api.general_purpose.close_cherry_door()
                 dest, disp = self._go_to_center_end()
+                self._counter += 1
+                self._state = DropoutCherrySequencerState.GO_TO_PLATE
 
                 return Action(
                     key='center',
@@ -115,6 +124,9 @@ class DropoutCherrySequencer:
                 )
         elif self._state == DropoutCherrySequencerState.FINISH:
             return None
+        elif self._state == DropoutCherrySequencerState.BACKWARD:
+            self._counter += 1
+
         else:
             self._state = DropoutCherrySequencerState.WAIT
 
@@ -135,15 +147,15 @@ class DropoutCherrySequencer:
         end_plate = RobotDisplacement.get_basket_plate(self._map, self.start_plate)
         plate = self._map.plates[end_plate]
 
-        if self.start_plate in {'plate-2', 'plate-8'}: # RobotDisplacement.is_on_right(self._map, self.current_position):
+        if end_plate == 'plate-10': # RobotDisplacement.is_on_right(self._map, self.current_position):
             dest_coordinate = Coordinate(
-                x=plate['x_pos'] - 50.0,
+                x=plate['x_pos'] - 120.0,
                 y=plate['y_pos'] - plate['y_size'] / 4,
                 angle=0.0,
             )
         else:
             dest_coordinate = Coordinate(
-                x=plate['x_pos'] + 50.0,
+                x=plate['x_pos'] + 70.0,
                 y=plate['y_pos'] - plate['y_size'] / 4,
                 angle=0.0,
             )
@@ -165,14 +177,14 @@ class DropoutCherrySequencer:
         if self.start_plate == 'plate-8':
             aruco = self._map.aruco_tags['tag-21']
             dest_coordinate = Coordinate(
-                x=aruco['x_pos'] - 100.0,
+                x=aruco['x_pos'] - 70.0,
                 y=aruco['y_pos'],
                 angle=0.0,
             )
         else:
             aruco = self._map.aruco_tags['tag-20']
             dest_coordinate = Coordinate(
-                x=aruco['x_pos'] + 100.0,
+                x=aruco['x_pos'] + 70.0,
                 y=aruco['y_pos'],
                 angle=0.0,
             )
